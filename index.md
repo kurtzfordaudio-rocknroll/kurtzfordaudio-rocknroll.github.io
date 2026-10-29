@@ -1,8 +1,11 @@
 ---
 layout: default
 title: Home
+lang: ko
 ---
 
+
+**한국어** | [English]({{ "/en/" | relative_url }})
 # 내 음악 파일에서 악기 소리들과 음성을 분리하기
 
 **HTDemucs 6-Stem 체크포인트를 Core ML FP16 모델로 변환하고 내 음악 파일에 적용해보기**

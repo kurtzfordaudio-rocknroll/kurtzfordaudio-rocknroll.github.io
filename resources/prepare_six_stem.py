@@ -16,13 +16,15 @@ replacements = [
     ('MODEL_NAME = "htdemucs"', 'MODEL_NAME = "htdemucs_6s"'),
     ('NUM_SOURCES = 4', 'NUM_SOURCES = 6'),
     ('# Demucs internal source order: drums(0), bass(1), other(2), vocals(3)\n# We reorder to vocals, drums, bass, other (typical UI / DJ convention).\nSOURCE_REORDER = [3, 0, 1, 2]\nSOURCE_NAMES = ["vocals", "drums", "bass", "other"]',
-     '# Demucs 6s internal source order: drums, bass, other, vocals, piano, guitar.\n# Output order: drums, bass, vocals, guitar, piano, other.\nSOURCE_REORDER = [0, 1, 3, 5, 4, 2]\nSOURCE_NAMES = ["drums", "bass", "vocals", "guitar", "piano", "other"]'),
+     '# Demucs 6s internal source order: drums, bass, other, vocals, guitar, piano.\n# Output order: drums, bass, vocals, guitar, piano, other.\nSOURCE_REORDER = [0, 1, 3, 4, 5, 2]\nSOURCE_NAMES = ["drums", "bass", "vocals", "guitar", "piano", "other"]'),
     ('Output: (1, 4, 2, segment_samples)  -- [vocals, drums, bass, other]',
      'Output: (1, 6, 2, segment_samples)  -- [drums, bass, vocals, guitar, piano, other]'),
     ('# Reorder sources: drums,bass,other,vocals -> vocals,drums,bass,other.',
      '# Reorder six sources to drums,bass,vocals,guitar,piano,other.'),
     ('f"Separated stems. Shape (1, 4, 2, {segment_samples}). "',
      'f"Separated stems. Shape (1, {NUM_SOURCES}, 2, {segment_samples}). "'),
+    ('minimum_deployment_target=ct.target.macOS14',
+     'minimum_deployment_target=ct.target.macOS13'),
     ('"MIT. Original Demucs: Copyright (c) Meta Platforms, Inc. and "\n        "affiliates, MIT License. See LICENSE and ATTRIBUTION."',
      '"Demucs source code: MIT. Pretrained model weights are not covered "\n        "by the MIT license; see https://github.com/facebookresearch/demucs/issues/327."'),
 ]
@@ -31,7 +33,7 @@ for old, new in replacements:
     if n != 1:
         raise SystemExit(f'ERROR: expected exactly one occurrence of {old[:85]!r}, found {n}. No changes made. Check converter revision.')
     s = s.replace(old, new, 1)
-if 'SOURCE_REORDER = [0, 1, 3, 5, 4, 2]' not in s or 'NUM_SOURCES = 6' not in s:
+if 'SOURCE_REORDER = [0, 1, 3, 4, 5, 2]' not in s or 'NUM_SOURCES = 6' not in s:
     raise SystemExit('ERROR: validation failed.')
 backup = Path('convert.py.original-4stem')
 if backup.exists():

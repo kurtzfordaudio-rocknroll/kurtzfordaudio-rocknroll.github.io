@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Home
+title: Stem 분리
 lang: ko
 ---
 
@@ -180,7 +180,18 @@ cd htdemucs-coreml
 ls convert.py requirements.txt
 ```
 
-두 파일명이 출력되면 성공입니다.
+다음과 같이 출력되었다면 성공입니다.
+
+```
+Cloning into 'htdemucs-coreml'...
+remote: Enumerating objects: 12, done.
+remote: Counting objects: 100% (12/12), done.
+remote: Compressing objects: 100% (9/9), done.
+remote: Total 12 (delta 1), reused 12 (delta 1), pack-reused 0 (from 0)
+Receiving objects: 100% (12/12), 18.83 KiB | 9.42 MiB/s, done.
+Resolving deltas: 100% (1/1), done.
+convert.py       requirements.txt
+```
 
 ---
 
@@ -198,11 +209,7 @@ python3.9 --version
 
 `Python 3.9.x`가 나오면 5-2로 넘어갑니다. `command not found` 같은 메시지가 나오면 [Python 공식 사이트](https://www.python.org/downloads/macos/)에서 Python 3.9용 macOS 설치 프로그램을 다운로드하여 설치하세요. Intel Mac과 Apple Silicon Mac 모두 지원하는 설치 프로그램을 선택합니다.
 
-설치 후 터미널을 새로 열어 다시 확인합니다.
-
-```
-python3.9 --version
-```
+확인을 위해 설치 후 터미널에서 위의 명령을 다시 실행해 봅니다.
 
 ### 5-2. 작업 공간 만들기
 
@@ -222,6 +229,8 @@ source .venv/bin/activate
 (.venv) 사용자이름@Mac이름 ~/htdemucs/htdemucs-coreml %
 ```
 
+`(.venv)` 옆에 `(base)` 가 보여도 상관 없습니다.
+
 ### 5-3. 필요한 Python 패키지 설치하기
 
 이제 변환 프로그램이 필요로 하는 패키지들을 설치합니다. 통쩨로 복사해서 프롬프트에 붙여넣고 제출하세요.
@@ -229,15 +238,17 @@ source .venv/bin/activate
 ```
 python -m pip install --upgrade pip
 python -m pip install -r requirements.txt
-python -m pip install scipy
+python -m pip install "numpy==2.0.2" scipy
+python -m pip check
 ```
 
-첫 번째 명령은 Python 패키지 설치 도구인 `pip`를 업데이트합니다. 두 번째는 변환기에 필요한 패키지들을, 세 번째는 마지막 음원 분리 실습에 필요한 `scipy`를 설치합니다. 설치에는 시간이 걸릴 수 있습니다.
+첫 번째 명령은 Python 패키지 설치 도구인 `pip`를 업데이트합니다. 두 번째는 변환기에 필요한 패키지들을 설치하고, 세 번째는 `NumPy 2.0.2`와 마지막 음원 분리 실습에 필요한 `scipy`를 설치합니다. 마지막 명령은 설치된 패키지들 사이에 의존성 충돌이 있는지 확인합니다. 설치에는 시간이 걸릴 수 있습니다.
+
+`requirements.txt`에도 `NumPy`가 포함되어 있지만, 이 튜토리얼에서는 버전을 2.0.2로 고정하기 위해 별도로 설치합니다.
 
 완료되면 아래 명령으로 확인합니다.
 
 ```
-python -m pip check
 python -c 'import torch, demucs, coremltools, numpy, einops; print("Python packages: OK")'
 ```
 

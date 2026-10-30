@@ -2,9 +2,13 @@
 layout: default
 title: Music Stem Separation
 lang: en
+description: "Convert an HTDemucs six-stem checkpoint to a Core ML FP16 model on macOS. Step-by-step setup, conversion, verification, and audio stem separation."
+author: K. Ford
 ---
 
 **English** | [한국어]({{ "/kr.html" | relative_url }}) | [日本語]({{ "/jp.html" | relative_url }})
+
+<p class="article-byline">K. Ford · Last updated: November 2025</p>
 
 # Extract Individual Instruments and Vocals from Your Music Files
 
@@ -292,14 +296,14 @@ If the last line begins with `Copied checkpoint to:` followed by a path, the cop
 
 This is the most important part of the guide. The converter we downloaded uses settings for a four-stem model. We need to change them as shown below. We will also set the Core ML minimum deployment target to macOS 13 so that the converted model can be used on relatively older versions of macOS.
 
-| Setting | Original | Modified |
-| --- | --- | --- |
-| Model name | `htdemucs` | `htdemucs_6s` |
-| Number of stems | `4` | `6` |
-| Source reorder | `[3, 0, 1, 2]` | `[0, 1, 3, 4, 5, 2]` |
-| Output names | vocals, drums, bass, other | drums, bass, vocals, guitar, piano, other |
-| Output shape description | `(1, 4, 2, …)` | `(1, 6, 2, …)` |
-| Minimum macOS version | `macOS14` | `macOS13` |
+| Setting                  | Original                   | Modified                                  |
+| ------------------------ | -------------------------- | ----------------------------------------- |
+| Model name               | `htdemucs`                 | `htdemucs_6s`                             |
+| Number of stems          | `4`                        | `6`                                       |
+| Source reorder           | `[3, 0, 1, 2]`             | `[0, 1, 3, 4, 5, 2]`                      |
+| Output names             | vocals, drums, bass, other | drums, bass, vocals, guitar, piano, other |
+| Output shape description | `(1, 4, 2, …)`             | `(1, 6, 2, …)`                            |
+| Minimum macOS version    | `macOS14`                  | `macOS13`                                 |
 
 The original Demucs six-source model outputs stems in this order: **drums, bass, other, vocals, guitar, piano**. We will change the order to **drums, bass, vocals, guitar, piano, other**.
 

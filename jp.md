@@ -2,9 +2,13 @@
 layout: default
 title: 音楽のステム分離
 lang: ja
+description: "MacでHTDemucsの6ステムチェックポイントをCore ML FP16モデルに変換する手順と、音楽ファイルから6つのステムを分離する実習を紹介します。"
+author: K. Ford
 ---
 
 [English]({{ "/" | relative_url }}) | [한국어]({{ "/kr.html" | relative_url }}) | **日本語**
+
+<p class="article-byline">K. Ford · 最終更新：2025年11月</p>
 
 # 音楽ファイルから楽器ごとの音とボーカルを取り出そう
 
@@ -292,14 +296,14 @@ PY
 
 ここがこのガイドで最も重要な部分です。ダウンロードした変換ツールには4ステム用の設定が入っています。以下のように変更します。また、比較的古いmacOSでも変換したモデルを使えるように、Core MLの最小デプロイ対象をmacOS 13に設定します。
 
-| 項目 | 元の値 | 変更後 |
-| --- | --- | --- |
-| モデル名 | `htdemucs` | `htdemucs_6s` |
-| ステム数 | `4` | `6` |
-| 出力の並べ替え | `[3, 0, 1, 2]` | `[0, 1, 3, 4, 5, 2]` |
-| 出力名 | vocals, drums, bass, other | drums, bass, vocals, guitar, piano, other |
-| 出力形状の説明 | `(1, 4, 2, …)` | `(1, 6, 2, …)` |
-| 最小macOSバージョン | `macOS14` | `macOS13` |
+| 項目                | 元の値                     | 変更後                                    |
+| ------------------- | -------------------------- | ----------------------------------------- |
+| モデル名            | `htdemucs`                 | `htdemucs_6s`                             |
+| ステム数            | `4`                        | `6`                                       |
+| 出力の並べ替え      | `[3, 0, 1, 2]`             | `[0, 1, 3, 4, 5, 2]`                      |
+| 出力名              | vocals, drums, bass, other | drums, bass, vocals, guitar, piano, other |
+| 出力形状の説明      | `(1, 4, 2, …)`             | `(1, 6, 2, …)`                            |
+| 最小macOSバージョン | `macOS14`                  | `macOS13`                                 |
 
 元のDemucs 6-sourceモデルの出力順序は**drums, bass, other, vocals, guitar, piano**です。このガイドでは**drums, bass, vocals, guitar, piano, other**の順序に変更します。
 

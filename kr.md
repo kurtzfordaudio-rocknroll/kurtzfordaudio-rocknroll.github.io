@@ -2,9 +2,13 @@
 layout: default
 title: Stem 분리
 lang: ko
+description: "Mac에서 HTDemucs 6-Stem 체크포인트를 Core ML FP16 모델로 변환하고 드럼, 베이스, 보컬, 기타, 피아노, 기타 소리를 분리하는 실습 튜토리얼."
+author: K. Ford
 ---
 
 [English]({{ "/" | relative_url }}) | **한국어** | [日本語]({{ "/jp.html" | relative_url }})
+
+<p class="article-byline">K. Ford · 마지막 업데이트: 2025년 11월</p>
 
 # 내 음악 파일에서 각각의 악기와 보컬 소리 추출하기
 

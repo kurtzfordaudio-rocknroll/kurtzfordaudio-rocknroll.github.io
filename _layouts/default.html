@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="{{ page.lang | default: 'en' }}">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ page.title | default: site.title }}</title>
+    {% include seo.html %}
     <style>
         body {
             margin: 0;
@@ -53,6 +54,12 @@
             border: none;
             height: 0;
             margin: 80px 0;
+        }
+
+        .article-byline {
+            margin: 8px 0 20px;
+            color: #656d76;
+            font-size: 0.9rem;
         }
 
         .code-container {

@@ -1,177 +1,177 @@
 ---
 layout: default
-title: Stem 분리
-lang: ko
+title: Music Stem Separation
+lang: en
 ---
 
-**한국어** | [English]({{ "/en/" | relative_url }})
+**English** | [한국어]({{ "/kr.html" | relative_url }}) | [日本語]({{ "/jp.html" | relative_url }})
 
-# 내 음악 파일에서 각각의 악기와 보컬 소리 추출하기
+# Extract Individual Instruments and Vocals from Your Music Files
 
-**HTDemucs 6-Stem 체크포인트를 Core ML FP16 모델로 변환하고 내 음악 파일에 적용해보기**
+**Convert an HTDemucs 6-Stem checkpoint into a Core ML FP16 model and try it on your own music**
 
-**예상 시간:** 30분 내외  
-**최종 결과:** macOS 13 이상에서 사용 가능한 음원 분리용 Core ML 패키지 `HTDemucs_CoreML_FP16.mlpackage`
+**Estimated time:** About 30 minutes  
+**Final result:** A Core ML package for audio source separation, `HTDemucs_CoreML_FP16.mlpackage`, targeting macOS 13 or later
 
-보컬, 드럼, 베이스, 기타, 피아노 등 여러 소리가 믹싱된 음원에서 각 악기의 소리를 다시 분리해 낼 수 있을까?
+Can we separate the individual instruments and vocals from a song that mixes drums, bass, guitar, piano, vocals, and other sounds together?
 
-AI 연구자 **Alexandre Défossez와 공동 연구자들** 은 이 문제를 해결하기 위해 **Demucs**라는 인공지능 음원 분리 모델을 개발했습니다. 연구진은 **MUSDB HQ 등 음악 데이터**를 활용해 모델을 학습시켰고, 다른 사람들이 후속 연구에 사용할 수 있도록 일부 코드와 사전 학습된 모델의 체크포인트를 공개했습니다. 나중에 등장한 **Hybrid Transformer Demucs (HTDemucs)** 는 파형과 스펙트로그램을 함께 처리하여 여섯개의 Stem (드럼, 베이스, 보컬, 기타, 피아노, 그밖의 소리들) 을 깔끔하게 분리하는데 성공합니다.
+AI researcher **Alexandre Défossez and colleagues** developed **Demucs**, a model for separating audio sources, to tackle this problem. They trained the model using **MUSDB HQ and other music datasets** and released code and pretrained model checkpoints for further research. The later **Hybrid Transformer Demucs (HTDemucs)** combines waveform and spectrogram processing to separate audio into six stems: drums, bass, vocals, guitar, piano, and other sounds.
 
-이 튜토리얼은 체크포인트를 직접 다운로드하고, Mac에서 Core ML 형식으로 변환한 다음, 마지막에 테스트 음원으로부터 여섯개 Stem을 분리해내고 직접 들어보는 과정을 다룹니다.
+In this tutorial, you will download a checkpoint yourself, convert it to Core ML on a Mac, then separate a test audio file into six stems and listen to the results.
 
 <figure style="margin: 24px 0; text-align: center;">
   <img
     src="./images/manlistening.jpg"
-    alt="음악을 들으며 집중하는 사람"
+    alt="A person concentrating while listening to music"
     width="500"
     height="500"
     style="width: 500px; height: 500px; object-fit: cover; object-position: center bottom; border-radius: 8px;"
     loading="lazy"
   />
   <figcaption style="margin-top: 8px; font-size: 14px; color: #666;">
-    사진 소스 -
+    Photo credit —
     <a href="https://www.pexels.com/@wahlex-1869682520/" target="_blank" rel="noopener noreferrer">Wahlex</a>,
     pexels.com
   </figcaption>
 </figure>
 
-## 목차
+## Contents
 
-- [무엇을 만들게 되나?](#무엇을-만들게-되나)
-- [준비](#준비)
-- [1단계. 터미널 열고 작업 폴더 만들기](#1단계-터미널-열고-작업-폴더-만들기)
-- [2단계. 체크포인트 다운로드하기](#2단계-체크포인트-다운로드하기)
-- [3단계. Apple 개발 도구 설치하기](#3단계-apple-개발-도구-설치하기)
-- [4단계. Core ML 변환기 다운로드하기](#4단계-core-ml-변환기-다운로드하기)
-- [5단계. Python 설치하고 전용 작업 공간 만들기](#5단계-python-설치하고-전용-작업-공간-만들기)
-- [6단계. 다운로드한 체크포인트를 PyTorch 캐시에 넣기](#6단계-다운로드한-체크포인트를-pytorch-캐시에-넣기)
-- [7단계. 변환용 코드 약간 수정하기](#7단계-변환용-코드-약간-수정하기)
-- [8단계. FP16 Core ML 모델 만들기](#8단계-fp16-core-ml-모델-만들기)
-- [9단계. 모델 입력과 출력 확인하기](#9단계-모델-입력과-출력-확인하기)
-- [10단계. 직접 분리해 보고 들어보기](#10단계-직접-분리해-보고-들어보기)
-- [문제 해결 FAQ](#문제-해결-faq)
-- [마치며](#마치며)
-- [참고 자료와 출처](#참고-자료와-출처)
+- [What Will You Create?](#what-will-you-create)
+- [Requirements](#requirements)
+- [Step 1. Open Terminal and Create a Working Folder](#step-1-open-terminal-and-create-a-working-folder)
+- [Step 2. Download the Checkpoint](#step-2-download-the-checkpoint)
+- [Step 3. Install Apple Command Line Tools](#step-3-install-apple-command-line-tools)
+- [Step 4. Download the Core ML Converter](#step-4-download-the-core-ml-converter)
+- [Step 5. Install Python and Create a Dedicated Environment](#step-5-install-python-and-create-a-dedicated-environment)
+- [Step 6. Copy the Checkpoint into the PyTorch Cache](#step-6-copy-the-checkpoint-into-the-pytorch-cache)
+- [Step 7. Make a Few Changes to the Conversion Code](#step-7-make-a-few-changes-to-the-conversion-code)
+- [Step 8. Create the FP16 Core ML Model](#step-8-create-the-fp16-core-ml-model)
+- [Step 9. Check the Model Inputs and Outputs](#step-9-check-the-model-inputs-and-outputs)
+- [Step 10. Separate and Listen to the Stems](#step-10-separate-and-listen-to-the-stems)
+- [Troubleshooting FAQ](#troubleshooting-faq)
+- [Conclusion](#conclusion)
+- [References](#references)
 
-## 무엇을 만들게 되나?
+## What Will You Create?
 
-**HTDemucs_CoreML_FP16.mlpackage** 라는 Core ML 인공지능 모델 패키지를 만듭니다. 이 모델은 44.1 kHz 스테레오 오디오를 10초 단위로 입력받아 드럼, 베이스, 보컬, 기타, 피아노, 그밖의 소리들로 분리합니다. 마지막 실습에서는 제공된 test_10s.wav를 입력해 여섯 개의 WAV 파일을 만들고 직접 들어봅니다. 이 모델을 적절히 활용하면 10초보다 긴 음악 파일도 여러 구간으로 나누어 처리한 뒤 다시 하나로 합쳐 연속된 Stem 파일들을 만들수도 있습니다.
+You will create a Core ML model package named **HTDemucs_CoreML_FP16.mlpackage**. It accepts 44.1 kHz stereo audio in 10-second segments and separates it into drums, bass, vocals, guitar, piano, and other sounds. In the final exercise, you will use the supplied test_10s.wav file to generate six WAV files and listen to each one. With additional code to process successive segments and join their outputs, the model can also separate music files longer than 10 seconds into continuous stem tracks.
 
-## 준비
+## Requirements
 
-- **macOS 13 이상이 설치된 Mac** (Apple Silicon 및 Intel 모두 지원)
-- **인터넷 연결**
-- **터미널(Terminal) 앱** (Mac에 기본 설치된 앱)
-- **웹 브라우저** (체크포인트 다운로드 등에 필요)
-- **실습용 음원 `test_10s.wav`** (이 튜토리얼에서 제공 - [`test_10s.wav`](resources/test_10s.wav))
+- **A Mac running macOS 13 or later** (both Apple Silicon and Intel are supported)
+- **An internet connection**
+- **The Terminal app** (included with macOS)
+- **A web browser** (for downloading the checkpoint and other files)
+- **The sample audio `test_10s.wav`** (provided with this tutorial — [`test_10s.wav`](resources/test_10s.wav))
 
 ---
 
-## 1단계. 터미널 열고 작업 폴더 만들기
+## Step 1. Open Terminal and Create a Working Folder
 
-### 1-1. 터미널이란?
+### 1-1. What Is Terminal?
 
-**터미널(Terminal)** 은 Mac에 글자로 명령을 내리는 창구 역할을 하는 앱입니다. 마우스로 폴더를 만들고 이동하는 대신, 짧은 명령어를 타이핑해 넣어 컴퓨터에게 일을 지시할 수 있습니다.
+**Terminal** lets you give your Mac instructions by typing commands. Instead of creating and navigating folders with the mouse, you can use short commands to tell the computer what to do.
 
-<img src="https://help.apple.com/assets/67DB80CC8ED20D93270BDBE5/67DB80CD888B30021203ACDC/en_US/4e8328e6927032645dfb715a76f5a527.png" width="100" alt="Apple Terminal 앱 아이콘 — 검은 배경에 >_ 표시">
+<img src="https://help.apple.com/assets/67DB80CC8ED20D93270BDBE5/67DB80CD888B30021203ACDC/en_US/4e8328e6927032645dfb715a76f5a527.png" width="100" alt="Apple Terminal icon — white prompt symbol on a black background">
 
-터미널을 여는 방법:
+To open Terminal:
 
-1. Finder를 엽니다.
-2. **응용 프로그램(Applications)** → **유틸리티(Utilities)** 폴더로 이동합니다.
-3. 위 그림과 같은 **터미널(Terminal)** 앱을 더블클릭합니다.
+1. Open Finder.
+2. Go to **Applications** → **Utilities**.
+3. Double-click **Terminal**, which looks like the icon above.
 
-또는 `⌘ Command + Space`를 눌러 `Terminal`을 검색하고 Return을 눌러도 됩니다.
+Alternatively, press `⌘ Command + Space`, search for `Terminal`, and press Return.
 
-터미널을 열면 다음과 비슷한 **프롬프트(prompt)** 가 보입니다. `~`는 Mac 사용자의 홈 폴더를 뜻합니다. 프롬프트가 **현재 작업 위치는 당신의 홈 폴더입니다** 라고 표시해주고 있습니다.
+After opening Terminal, you will see a **prompt** similar to the one below. The `~` indicates your Mac user's home folder. The prompt is showing that your **current working directory is your home folder**.
 
 ```text
-사용자이름@Mac이름 ~ %
+username@Mac-name ~ %
 ```
 
-프롬프트 끝에 작업 지시 명령을 입력할 수 있습니다.
+You can type commands at the end of the prompt.
 
-### 1-2. 작업 폴더 만들기
+### 1-2. Create a Working Folder
 
-다음 명령어를 복사해서 터미널의 프롬프트에 붙여넣고 Return(엔터)을 누르세요. 직접 타이핑 해도 됩니다.
+Copy the following command into Terminal and press Return (Enter). You can also type it yourself.
 
 ```
 mkdir ~/htdemucs
 ```
 
-`mkdir`은 **새 폴더를 만들라**는 명령입니다. 내 홈 폴더 속에 `htdemucs` 라는 폴더를 만들라는 지시입니다. Return키를 눌러서 명령을 제출하고 나면 폴더가 만들어집니다. 제출 후에 별다른 메시지가 나오지 않는게 정상입니다. 이미 같은 폴더가 있으면 `File exists` 메시지가 나올 수 있는데, 그 경우 기존 폴더를 사용하면 됩니다.
+`mkdir` means **make a directory**. This command creates an `htdemucs` folder inside your home folder. Normally, no message appears after the command completes. If the folder already exists, you may see `File exists`; simply use the existing folder.
 
-방금 만든 폴더로 이동합니다.
+Move into the new folder:
 
 ```
 cd ~/htdemucs
 ```
 
-`cd`는 **폴더 이동** 명령입니다. 이어서 현재 위치를 확인합니다.
+`cd` means **change directory**. Next, check your current location:
 
 ```
 pwd
 ```
 
-출력된 경로 끝이 `/htdemucs`이면 성공입니다. 마지막으로 폴더 안에 어떤 파일이 있는지 살펴봅니다.
+If the path ends in `/htdemucs`, the command worked. Finally, inspect the files in this folder:
 
 ```
 ls
 ```
 
-`ls`는 **현재 폴더의 파일 목록**을 보여 줍니다. 새 폴더라면 아무것도 표시되지 않습니다.
+`ls` lists the files in the current folder. A newly created folder may be empty, so nothing may appear.
 
 ---
 
-## 2단계. 체크포인트 다운로드하기
+## Step 2. Download the Checkpoint
 
-**체크포인트(checkpoint)** 란 인공지능 모델이 학습을 통해 얻은 가중치들을 저장한 파일입니다. 인공지능 모델의 본체라고 할 수 있는 중요한 파일로, 이를 이용하면 방대한 데이터를 수집하고 모델을 직접 학습시키는 과정을 건너뛰고 이미 학습된 모델을 사용할 수 있습니다.
+A **checkpoint** is a file containing the weights a neural network learned during training. You can think of these weights as a central part of the trained model: the checkpoint lets you use an existing model without gathering a large dataset and training it from scratch.
 
-다운로드할 파일 이름은 `5c90dfd2-34c22ccb.th` 입니다. 아래 링크 중 하나를 열어 체크포인트 파일을 다운로드하세요.
+The file to download is `5c90dfd2-34c22ccb.th`. Open one of the links below to download it:
 
-- **Meta 서버:** [5c90dfd2-34c22ccb.th 다운로드](https://dl.fbaipublicfiles.com/demucs/hybrid_transformer/5c90dfd2-34c22ccb.th)
-- **Hugging Face — lainlives/audio-separator-models:** [파일 페이지](https://huggingface.co/lainlives/audio-separator-models/blob/main/5c90dfd2-34c22ccb.th)
-- **Hugging Face — lainlives/audio-separator-models-old:** [파일 페이지](https://huggingface.co/lainlives/audio-separator-models-old/blob/a78be39e563e8337bc7f2e5241d8063256d86167/5c90dfd2-34c22ccb.th)
+- **Meta server:** [Download 5c90dfd2-34c22ccb.th](https://dl.fbaipublicfiles.com/demucs/hybrid_transformer/5c90dfd2-34c22ccb.th)
+- **Hugging Face — lainlives/audio-separator-models:** [File page](https://huggingface.co/lainlives/audio-separator-models/blob/main/5c90dfd2-34c22ccb.th)
+- **Hugging Face — lainlives/audio-separator-models-old:** [File page](https://huggingface.co/lainlives/audio-separator-models-old/blob/a78be39e563e8337bc7f2e5241d8063256d86167/5c90dfd2-34c22ccb.th)
 
-Finder에서 `Downloads` 폴더를 열고 `5c90dfd2-34c22ccb.th` 파일이 받아졌는지 확인하세요. 다음 단계에서는 `~/Downloads/5c90dfd2-34c22ccb.th`에 있다고 가정합니다.
+In Finder, open your `Downloads` folder and confirm that `5c90dfd2-34c22ccb.th` is there. The following steps assume it is saved as `~/Downloads/5c90dfd2-34c22ccb.th`.
 
 ---
 
-## 3단계. Apple 개발 도구 설치하기
+## Step 3. Install Apple Command Line Tools
 
-**Apple 개발 도구(Command Line Tools)** 는 Mac에서 프로그래밍 관련 명령을 사용할 수 있도록 해 주는 기본 도구 묶음입니다.
+**Apple Command Line Tools** provide basic development commands for your Mac.
 
-먼저 설치 여부를 확인합니다. 터미널에서 아래 명령을 실행합니다.
+First, check whether they are already installed by running this command in Terminal:
 
 ```
 xcode-select -p
 ```
 
-`/Library/Developer/CommandLineTools` 또는 다른 설치 경로가 출력되면 이미 설치된 것입니다.
+If you see `/Library/Developer/CommandLineTools` or another installation path, they are already installed.
 
-경로가 출력되는 대신 오류가 나타나면 다음 명령을 실행합니다.
+If the command instead displays an error, run:
 
 ```
 xcode-select --install
 ```
 
-설치 창이 나타나면 **설치(Install)**를 클릭하고 화면의 안내를 따르세요. 설치가 끝난 뒤 터미널에서 `xcode-select -p`를 다시 실행해 경로를 확인합니다.
+When the installation window appears, click **Install** and follow the instructions. After installation, run `xcode-select -p` again to confirm the path.
 
-Apple 개발 도구에 기본 포함된 Git도 정상적으로 설치되었는지 확인합니다.
+Also check that **Git**, included with Apple Command Line Tools, is available:
 
 ```
 git --version
 ```
 
-Git 버전 번호가 출력되면 준비가 끝난 것입니다.
+If Git prints a version number, you are ready to continue.
 
 ---
 
-## 4단계. Core ML 변환기 다운로드하기
+## Step 4. Download the Core ML Converter
 
-HTDemucs를 Core ML로 바꾸기 위해 [dexxdean/htdemucs-coreml](https://github.com/dexxdean/htdemucs-coreml) 프로젝트를 사용합니다. 이 변환기는 원래 4-stem을 다루도록 구성되어 있습니다. 6-stem을 다룰 수 있게 약간 변경하겠습니다.
+We will use the [dexxdean/htdemucs-coreml](https://github.com/dexxdean/htdemucs-coreml) project to convert HTDemucs into Core ML. This converter is originally configured for four stems. We will make a few changes to support six stems.
 
-아래 명령을 차례대로 실행합니다. 네 줄을 한꺼번에 프롬프트에 복사해서 붙여도 됩니다. 그러면 `~/htdemucs`로 이동, git 저장소에서 프로젝트 다운로드, 다운로드한 프로젝트 폴더로 이동, 두개의 파일이 들어있나 확인까지 한꺼번에 수행합니다.
+Run the following commands in order. You can paste all four lines into Terminal at once. They move into `~/htdemucs`, clone the Git repository, enter the downloaded project folder, and confirm that two required files are present.
 
 ```
 cd ~/htdemucs
@@ -180,7 +180,7 @@ cd htdemucs-coreml
 ls convert.py requirements.txt
 ```
 
-다음과 같이 출력되었다면 성공입니다.
+A successful result should look similar to this:
 
 ```
 Cloning into 'htdemucs-coreml'...
@@ -195,27 +195,27 @@ convert.py       requirements.txt
 
 ---
 
-## 5단계. Python 설치하고 전용 작업 공간 만들기
+## Step 5. Install Python and Create a Dedicated Environment
 
-**Python(파이썬)** 은 우리가 사용할 변환 프로그램을 실행하는 언어입니다. 버전 3.9를 이용하겠습니다.
+**Python** is the programming language used to run the converter. We will use Python 3.9.
 
-### 5-1. Python 설치 여부 확인하기
+### 5-1. Check Whether Python Is Installed
 
-터미널에 다음 명령을 입력합니다.
+Run the following command in Terminal:
 
 ```
 python3.9 --version
 ```
 
-`Python 3.9.x`가 나오면 5-2로 넘어갑니다. `command not found` 같은 메시지가 나오면 [Python 공식 사이트](https://www.python.org/downloads/macos/)에서 Python 3.9용 macOS 설치 프로그램을 다운로드하여 설치하세요. Intel Mac과 Apple Silicon Mac 모두 지원하는 설치 프로그램을 선택합니다.
+If you see `Python 3.9.x`, continue to Step 5-2. If you see `command not found` or a similar message, download and install the macOS installer for Python 3.9 from the [official Python website](https://www.python.org/downloads/macos/). Choose an installer compatible with your Mac's processor (Intel or Apple Silicon).
 
-확인을 위해 설치 후 터미널에서 위의 명령을 다시 실행해 봅니다.
+After installation, run the same command again to confirm the version.
 
-### 5-2. 작업 공간 만들기
+### 5-2. Create a Working Environment
 
-이 튜토리얼에서는 몇가지 Python용 패키지를 설치하는 과정이 포함되어있습니다. **가상환경(virtual environment)** 이라고 부르는 독립된 작업 공간을 만들어서 다른 프로젝트의 Python 패키지들과 섞이지 않게 해 줍니다.
+This tutorial requires several Python packages. We will create a separate **virtual environment** so that these packages do not interfere with packages used by your other projects.
 
-우선 `~/htdemucs/htdemucs-coreml` 로 이동한 뒤 가상환경을 만들고 사용하도록 설정합니다.
+Move to `~/htdemucs/htdemucs-coreml`, create a virtual environment, and activate it:
 
 ```
 cd ~/htdemucs/htdemucs-coreml
@@ -223,17 +223,17 @@ python3.9 -m venv .venv
 source .venv/bin/activate
 ```
 
-이 명령들을 실행하고 나서부터 터미널 프롬프트 앞에 `(.venv)`가 나타나면 성공입니다. 이것은 **이번 작업용 Python 가상환경이 활성화되었다는 표시** 입니다.
+If `(.venv)` appears at the start of the Terminal prompt, the **virtual environment for this tutorial is active**.
 
 ```text
-(.venv) 사용자이름@Mac이름 ~/htdemucs/htdemucs-coreml %
+(.venv) username@Mac-name ~/htdemucs/htdemucs-coreml %
 ```
 
-`(.venv)` 옆에 `(base)` 가 보여도 상관 없습니다.
+It is also fine if `(base)` appears next to `(.venv)`.
 
-### 5-3. 필요한 Python 패키지 설치하기
+### 5-3. Install the Required Python Packages
 
-이제 변환 프로그램이 필요로 하는 패키지들을 설치합니다. 통쩨로 복사해서 프롬프트에 붙여넣고 제출하세요.
+Install the packages needed by the converter. Copy the entire block into Terminal and execute it:
 
 ```
 python -m pip install --upgrade pip
@@ -242,19 +242,19 @@ python -m pip install "numpy==2.0.2" scipy
 python -m pip check
 ```
 
-첫 번째 명령은 Python 패키지 설치 도구인 `pip`를 업데이트합니다. 두 번째는 변환기에 필요한 패키지들을 설치하고, 세 번째는 `NumPy 2.0.2`와 마지막 음원 분리 실습에 필요한 `scipy`를 설치합니다. 마지막 명령은 설치된 패키지들 사이에 의존성 충돌이 있는지 확인합니다. 설치에는 시간이 걸릴 수 있습니다.
+The first command updates `pip`, Python's package installer. The second installs the converter's dependencies. The third installs `NumPy 2.0.2` and `scipy`, which is needed for the final audio separation exercise. The last command checks whether the installed packages have conflicting dependency requirements. Installation may take some time.
 
-`requirements.txt`에도 `NumPy`가 포함되어 있지만, 이 튜토리얼에서는 버전을 2.0.2로 고정하기 위해 별도로 설치합니다.
+`requirements.txt` already includes `NumPy`, but we install it separately here to pin the version to 2.0.2 for this tutorial.
 
-완료되면 아래 명령으로 확인합니다.
+When installation is complete, check that the required packages can be imported:
 
 ```
 python -c 'import torch, demucs, coremltools, numpy, einops; print("Python packages: OK")'
 ```
 
-`Python packages: OK`가 출력되면 필요한 패키지를 모두 정상적으로 설치했다는 의미입니다. 오류가 나오면 아래 **문제 해결 FAQ**를 확인하세요.
+If you see `Python packages: OK`, the imports succeeded. If an error occurs, consult the **Troubleshooting FAQ** below.
 
-**작업중에 터미널을 닫고 새 터미널에서 다시 시작한다면?** 처음부터 설치할 필요는 없습니다. 터미널을 열고 아래 두 명령을 먼저 수행한 뒤에 작업을 이어가면 됩니다.
+**What if you close Terminal and open a new window later?** You do not need to reinstall the packages. Run these two commands before continuing:
 
 ```
 cd ~/htdemucs/htdemucs-coreml
@@ -263,9 +263,9 @@ source .venv/bin/activate
 
 ---
 
-## 6단계. 다운로드한 체크포인트를 PyTorch 캐시에 넣기
+## Step 6. Copy the Checkpoint into the PyTorch Cache
 
-터미널에 아래 명령을 통째로 붙여넣고 Return을 누릅니다. 2단계에서 다운로드한 체크포인트 파일(`5c90dfd2-34c22ccb.th`)을 캐시 경로로 자동 복사합니다.
+Paste the following complete block into Terminal and press Return. It automatically copies the checkpoint file (`5c90dfd2-34c22ccb.th`) downloaded in Step 2 into the PyTorch cache directory.
 
 ```
 python - <<'PY'
@@ -284,30 +284,30 @@ print('Copied checkpoint to:', target)
 PY
 ```
 
-실행 후 마지막 줄에 `Copied checkpoint to:`와 경로가 출력되면 성공입니다.
+If the last line begins with `Copied checkpoint to:` followed by a path, the copy succeeded.
 
 ---
 
-## 7단계. 변환용 코드 약간 수정하기
+## Step 7. Make a Few Changes to the Conversion Code
 
-이 가이드에서 가장 중요한 부분입니다. 우리가 다운로드했던 변환기(변환용 코드)는 4-stem용 기본값을 사용합니다. 이를 아래와 같이 바꾸어야 합니다. 이때 Core ML 최소 실행 버전도 macOS 13으로 설정합니다. 이는 여러분이 만든 모델을 비교적 오래된 macOS에서도 사용할 수 있도록 하기 위한 것입니다.
+This is the most important part of the guide. The converter we downloaded uses settings for a four-stem model. We need to change them as shown below. We will also set the Core ML minimum deployment target to macOS 13 so that the converted model can be used on relatively older versions of macOS.
 
-| 항목            | 원래 값                    | 변경 값                                   |
-| --------------- | -------------------------- | ----------------------------------------- |
-| 모델 이름       | `htdemucs`                 | `htdemucs_6s`                             |
-| stem 개수       | `4`                        | `6`                                       |
-| 출력 재배열     | `[3, 0, 1, 2]`             | `[0, 1, 3, 4, 5, 2]`                      |
-| 출력 이름       | vocals, drums, bass, other | drums, bass, vocals, guitar, piano, other |
-| 출력 설명 크기  | `(1, 4, 2, …)`             | `(1, 6, 2, …)`                            |
-| 최소 macOS 버전 | `macOS14`                  | `macOS13`                                 |
+| Setting | Original | Modified |
+| --- | --- | --- |
+| Model name | `htdemucs` | `htdemucs_6s` |
+| Number of stems | `4` | `6` |
+| Source reorder | `[3, 0, 1, 2]` | `[0, 1, 3, 4, 5, 2]` |
+| Output names | vocals, drums, bass, other | drums, bass, vocals, guitar, piano, other |
+| Output shape description | `(1, 4, 2, …)` | `(1, 6, 2, …)` |
+| Minimum macOS version | `macOS14` | `macOS13` |
 
-원래 Demucs 6-source 모델의 내부 출력 순서는 **drums, bass, other, vocals, guitar, piano**입니다. 이 가이드는 출력 순서를 **drums, bass, vocals, guitar, piano, other**로 변경하겠습니다.
+The original Demucs six-source model outputs stems in this order: **drums, bass, other, vocals, guitar, piano**. We will change the order to **drums, bass, vocals, guitar, piano, other**.
 
-### 7-1. 보조 스크립트 다운로드
+### 7-1. Download the Helper Script
 
-이 튜토리얼과 함께 제공되는 [`prepare_six_stem.py`](resources/prepare_six_stem.py) 파일을 다운로드하세요. `~/Downloads` 폴더에 저장했다고 가정합니다.
+Download [`prepare_six_stem.py`](resources/prepare_six_stem.py), provided with this tutorial. We assume it is saved in `~/Downloads`.
 
-다음 명령들을 한줄씩 실행합니다.
+Run the following commands one line at a time:
 
 ```
 cd ~/htdemucs/htdemucs-coreml
@@ -315,18 +315,18 @@ cp ~/Downloads/prepare_six_stem.py .
 ls convert.py prepare_six_stem.py
 ```
 
-첫 번째 줄의 명령은 혹시 작업중에 다른 폴더로 이동했을 수 도 있기때문에 안전을 위해 실행하는것이니 생략해도 좋습니다.
-`cp`명령어로 파일을 현재 위치한 폴더로 복사한 다음, `ls`명령어로 복사가 되었나 확인합니다. 두 파일이 보이면 수정 코드를 실행합니다.
+The first command is a precaution in case you have moved to a different folder; you can skip it if you are already in the correct location.
+The `cp` command copies the helper script into the current folder, and `ls` confirms that both files are present. If they are, run the helper:
 
 ```
 python prepare_six_stem.py
 ```
 
-이 스크립트는 `convert.py`를 `convert.py.original-4stem`으로 백업하고, `convert.py`의 내용을 몇군데 변경합니다. 변경 중에 오류가 발생하면 자세한 내용을 출력하도록 설계했습니다.
+The script backs up `convert.py` as `convert.py.original-4stem`, then modifies several sections of `convert.py`. If it encounters an error, it is designed to provide a detailed message.
 
-> 보조 스크립트가 원본 코드 속에서 변경할 부분을 찾지 못하면 수정을 중단합니다. 그 경우 아래 FAQ를 확인하세요.
+> If the helper cannot find the expected sections of the original converter, it stops rather than applying incomplete changes. Refer to the FAQ below.
 
-**예상 결과:**
+**Expected output:**
 
 ```text
 SUCCESS: convert.py adapted for six stems.
@@ -335,9 +335,9 @@ Model: htdemucs_6s
 Output: drums, bass, vocals, guitar, piano, other
 ```
 
-### 7-2. 수정 결과 확인
+### 7-2. Verify the Changes
 
-통째로 터미널 프롬프트에 복사해서 붙여넣고 Return키를 누르세요.
+Copy the entire block into Terminal and press Return:
 
 ```
 python -m py_compile convert.py
@@ -350,7 +350,7 @@ for line in s.splitlines():
 PY
 ```
 
-다음과 같이 결과가 출력되면 정상입니다.
+The output should look like this:
 
 ```python
 MODEL_NAME = "htdemucs_6s"
@@ -359,24 +359,24 @@ SOURCE_REORDER = [0, 1, 3, 4, 5, 2]
 SOURCE_NAMES = ["drums", "bass", "vocals", "guitar", "piano", "other"]
 ```
 
-### 왜 변환기를 직접 수정하나?
+### Why Do We Need to Modify the Converter?
 
-원래 HTDemucs의 일부 연산은 `coremltools`가 그대로 변환하기 어렵습니다. 공개 변환기는 복소수 연산을 실수 기반 표현으로 처리하고, attention 연산 및 overlap-add 경로를 변환 가능한 형태로 구현합니다. **가중치는 새로 학습하지 않으며**, 네트워크 모델을 Core ML 형식으로 옮기는 것이 목적입니다.
+Some operations in the original HTDemucs architecture cannot be directly converted by `coremltools`. The public converter implements complex-number operations using real-valued representations and provides conversion-compatible attention and overlap-add operations. **We are not retraining the weights**; the goal is to convert the trained network into Core ML format.
 
 ---
 
-## 8단계. FP16 Core ML 모델 만들기
+## Step 8. Create the FP16 Core ML Model
 
-**Core ML 패키지** 를 만드는 최종 단계입니다.
+This is the final step in creating the **Core ML package**.
 
-현재 터미널의 작업 위치를 `htdemucs-coreml` 폴더로 옮긴 뒤 변환기 `convert.py`를 실행합니다. 프롬프트 맨 앞에 `(.venv)`가 붙어있어야 합니다.
+Move into the `htdemucs-coreml` folder, then run `convert.py`. Make sure `(.venv)` appears at the beginning of the Terminal prompt.
 
 ```
 cd ~/htdemucs/htdemucs-coreml
 python convert.py --fp16 --compute-units cpu_and_gpu
 ```
 
-변환기 실행 중 화면에는 다음 단계가 표시됩니다.
+During conversion, you will see stages similar to the following:
 
 ```text
 [1/5] Loading Demucs 'htdemucs_6s' ...
@@ -386,9 +386,21 @@ python convert.py --fp16 --compute-units cpu_and_gpu
 [5/5] Core ML conversion ...
 ```
 
-복잡한 신경망을 변환하므로 작업 중 메모리 사용량이 증가할 수 있습니다. **오류가 출력되지 않고 변환 및 검증 절차가 끝났는지** 확인하세요.
+Converting this complex neural network can increase memory use. Check that conversion and validation finish **without errors**. You should see a validation result like this:
 
-다음 명령으로 모델 패키지가 생성되었는지 확인합니다.
+```
+[Val] Validating Core ML vs. PyTorch reference ...
+
+      Max diff:  0.005583
+      Mean diff: 0.000232
+      Validation OK.
+```
+
+The maximum output difference (`Max diff`) and average output difference (`Mean diff`) are better when smaller. The message `Validation OK.` indicates that the converter's validation passed.
+
+You can ignore the `Next step:` message at the end; it is intended for Xcode developers. We will test the converted Core ML model on actual audio in the next steps.
+
+Check that the model package `HTDemucs_CoreML_FP16.mlpackage` was created:
 
 ```
 ls -ld HTDemucs_CoreML_FP16.mlpackage
@@ -396,9 +408,9 @@ ls -ld HTDemucs_CoreML_FP16.mlpackage
 
 ---
 
-## 9단계. 모델 입력과 출력 확인하기
+## Step 9. Check the Model Inputs and Outputs
 
-`coremltools`로 방금 만든 모델의 입력·출력 사양을 확인합니다.
+Use `coremltools` to inspect the input and output specifications of the model you just created.
 
 ```
 python - <<'PY'
@@ -415,7 +427,7 @@ for item in model.get_spec().description.output:
 PY
 ```
 
-확인할 값은 다음과 같습니다.
+This check may take a little time. You should see:
 
 ```text
 Inputs:
@@ -424,40 +436,40 @@ Outputs:
   sources [1, 6, 2, 441000]
 ```
 
-[1, 6, 2, 441000]은 한 번의 오디오 처리로 6개의 Stem이 생성되고, 각 Stem은 2채널(왼쪽/오른쪽), 441000샘플(10초 분량)로 구성된다는 뜻입니다.
+The shape `[1, 6, 2, 441000]` means that one audio input produces six stems, each with two channels (left and right) containing 441,000 samples (10 seconds at 44.1 kHz).
 
-10단계의 안내를 따라 실제 음원의 분리 품질과 source 순서를 확인하는 청취 테스트도 반드시 실시합니다. 즉 `drums.wav`를 청취했을 때 그 속에 실제로 드럼 소리가 들어있는지, `guitar.wav`를 청취했을 때 기타소리 외에 다른 악기 소리가 두드러지게 섞여있는지 등을 확인합니다.
-
----
-
-## 문제 해결 FAQ
-
-**Q. `python3.9`을 찾지 못합니다.**  
-A. Python 공식 사이트 [`https://www.python.org/downloads/macos/`] 에서 Python 3.9.x 를 다운받아 설치합니다. 설치 후 터미널에서 `python3.9 --version`을 실행하세요.
-
-**Q. `No module named demucs` 등 Python 오류가 납니다.**  
-A. `source .venv/bin/activate`를 다시 실행하고 `python -m pip install -r requirements.txt`를 확인하세요.
-
-**Q. 4개 stem만 생성됩니다.**  
-A. `MODEL_NAME`, `NUM_SOURCES`, `SOURCE_REORDER`, `SOURCE_NAMES`가 7단계의 값인지 확인하고, 이전에 생성한 `.mlpackage`와 혼동하지 않았는지 확인하세요.
-
-**Q. Core ML 모델을 생성했지만 로딩이나 예측이 실패합니다.**  
-A. macOS 버전과 `coremltools` 버전, 디스크 공간, 메모리, 그리고 `CPU_AND_GPU` 설정을 확인하세요. 계산 장치의 변경은 별도 검증 없이 권장하지 않습니다.
-
-**Q. 가상 환경에서 빠져나가려면?**  
-A. 터미널에서 `deactivate`를 실행하세요. 다시 시작할 때는 작업 폴더에서 `source .venv/bin/activate`를 실행합니다.
+In Step 10, be sure to listen to the stems to verify both separation quality and source order. For example, `drums.wav` should contain drums, while `guitar.wav` should primarily contain guitar rather than an obviously different instrument.
 
 ---
 
-## 10단계. 직접 분리해 보고 들어보기
+## Troubleshooting FAQ
 
-이제 우리가 만든 Core ML 모델이 실제로 악기 소리를 얼마나 잘 분리하는지 확인해 봅니다.
+**Q. The `python3.9` command cannot be found.**  
+A. Download Python 3.9.x from the [official Python website](https://www.python.org/downloads/macos/) and install it. Then run `python3.9 --version` in Terminal.
 
-10초짜리 [`test_10s.wav`](resources/test_10s.wav)를 다운로드 받으세요.
+**Q. I get `No module named demucs` or another Python import error.**  
+A. Run `source .venv/bin/activate` again and check `python -m pip install -r requirements.txt`.
 
-1. 현재 GitHub 저장소에서 **`test_10s.wav`** 파일을 클릭하고, **Download raw file** 아이콘을 눌러 다운로드합니다.
-2. 파일이 Mac의 `Downloads` 폴더에 저장되었는지 확인합니다.
-3. 터미널에서 다음 명령을 한 줄씩 실행해 변환기 작업 폴더로 이동하고 테스트 파일을 복사합니다.
+**Q. Only four stems are produced.**  
+A. Check that `MODEL_NAME`, `NUM_SOURCES`, `SOURCE_REORDER`, and `SOURCE_NAMES` match the values in Step 7, and make sure you have not selected an older `.mlpackage`.
+
+**Q. I created the Core ML package, but loading or prediction fails.**  
+A. Check your macOS version, `coremltools` version, available disk space, memory, and the `CPU_AND_GPU` setting. Do not change compute units without validating the result.
+
+**Q. How do I leave the virtual environment?**  
+A. Run `deactivate` in Terminal. When you return, go to the working folder and run `source .venv/bin/activate`.
+
+---
+
+## Step 10. Separate and Listen to the Stems
+
+Now let's see how well the Core ML model separates a real audio recording into individual instruments and vocals.
+
+Download the 10-second [`test_10s.wav`](resources/test_10s.wav) file.
+
+1. In this GitHub repository, click **`test_10s.wav`**, then click the **Download raw file** icon.
+2. Confirm that the file was saved in your Mac's `Downloads` folder.
+3. Run the following commands one line at a time to move into the converter's working folder and copy the sample file:
 
 ```
 cd ~/htdemucs/htdemucs-coreml
@@ -466,7 +478,7 @@ cp ~/Downloads/test_10s.wav .
 ls -lh test_10s.wav HTDemucs_CoreML_FP16.mlpackage
 ```
 
-이제 아래 코드를 한 번에 복사해 터미널에 붙여넣고 Return을 누릅니다. 모델이 음원을 여섯 개의 WAV 파일로 분리합니다.
+Copy the following entire code block into Terminal and press Return. It will separate the sample audio into six WAV files.
 
 ```
 python - <<'PY'
@@ -477,7 +489,7 @@ from scipy.io import wavfile
 
 rate, data = wavfile.read('test_10s.wav')
 if rate != 44100 or data.ndim != 2 or data.shape[1] != 2:
-    raise ValueError('44.1 kHz 스테레오 WAV 파일이 필요합니다.')
+    raise ValueError('A 44.1 kHz stereo WAV file is required.')
 
 data = data.astype(np.float32)
 segment_samples = 441000
@@ -495,40 +507,40 @@ sources = np.asarray(model.predict({'audio': audio})['sources'])[0]
 
 names = ['drums', 'bass', 'vocals', 'guitar', 'piano', 'other']
 if sources.shape != (6, 2, segment_samples):
-    raise ValueError(f'예상과 다른 출력 형식: {sources.shape}')
+    raise ValueError(f'Unexpected output shape: {sources.shape}')
 
 output_dir = Path('separated_stems')
 output_dir.mkdir(exist_ok=True)
 for name, stem in zip(names, sources):
     file_path = output_dir / f'{name}.wav'
     wavfile.write(file_path, rate, stem.T.astype(np.float32))
-    print('생성:', file_path)
+    print('Created:', file_path)
 PY
 ```
 
-작업이 끝나면 다음 명령으로 결과 폴더를 엽니다.
+When the process finishes, open the results folder:
 
 ```
 open separated_stems
 ```
 
-폴더에는 `drums.wav`, `bass.wav`, `vocals.wav`, `guitar.wav`, `piano.wav`, `other.wav`가 있습니다. 파일을 더블클릭해 각각 들어보고, 원본 `test_10s.wav`와 비교해 보세요.
+You will find `drums.wav`, `bass.wav`, `vocals.wav`, `guitar.wav`, `piano.wav`, and `other.wav`. Double-click each file to listen, and compare it with the original `test_10s.wav`.
 
 ---
 
-## 마치며
+## Conclusion
 
-이제 HTDemucs 체크포인트를 이용해 나만의 Core ML 모델을 만들고, 실제 음악에서 여섯 개의 Stem을 분리하는 과정까지 마쳤습니다. 이미 학습된 인공지능 모델을 Core ML 패키지로 직접 변환하고, 새로운 데이터에 적용해 결과를 확인해봤습니다.
+You have now used an HTDemucs checkpoint to create your own Core ML model and separate six stems from real music. Rather than training a neural network from scratch, you converted a pretrained model to Core ML and applied it to new audio.
 
-분리된 여섯 개의 WAV 파일을 들어보면 악기마다 분리 품질이 다르고, 다른 악기의 소리가 조금씩 섞여 들릴 수도 있지만, 하나의 음악 파일에서 개별 악기 소리를 추출할 수 있다는 것은 흥미로운 기술입니다.
+Listening to the six WAV files, you may notice that separation quality varies by instrument and that some sounds from other instruments remain audible. Even so, extracting separate instrument tracks from a single mixed recording is a fascinating capability.
 
-**직접 만든 `HTDemucs_CoreML_FP16.mlpackage` 파일을 잘 보관하세요!** 다음에 같은 모델이 필요할 때 복잡한 변환 과정을 다시 거치지 않고 사용할 수 있습니다.
+**Keep your `HTDemucs_CoreML_FP16.mlpackage` file in a safe place!** You can reuse it later without repeating the conversion process.
 
 ---
 
-## 참고 자료
+## References
 
-- [Meta Demucs 원본 저장소](https://github.com/facebookresearch/demucs)
-- [HTDemucs Core ML 변환기 — dexxdean/htdemucs-coreml](https://github.com/dexxdean/htdemucs-coreml)
+- [Original Meta Demucs repository](https://github.com/facebookresearch/demucs)
+- [HTDemucs Core ML converter — dexxdean/htdemucs-coreml](https://github.com/dexxdean/htdemucs-coreml)
 - [Hybrid Transformers for Music Source Separation](https://arxiv.org/abs/2211.08553)
-- [Python 공식 다운로드](https://www.python.org/downloads/macos/)
+- [Official Python downloads](https://www.python.org/downloads/macos/)

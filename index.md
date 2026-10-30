@@ -19,6 +19,22 @@ AI 연구자 **Alexandre Défossez와 공동 연구자들** 은 이 문제를 �
 
 이 튜토리얼은 체크포인트를 직접 다운로드하고, Mac에서 Core ML 형식으로 변환한 다음, 마지막에 테스트 음원으로부터 여섯개 Stem을 분리해내고 직접 들어보는 과정을 다룹니다.
 
+<figure style="margin: 24px 0; text-align: center;">
+  <img
+    src="./images/manlistening.jpg"
+    alt="음악을 들으며 집중하는 사람"
+    width="500"
+    height="500"
+    style="width: 500px; height: 500px; object-fit: cover; object-position: center bottom; border-radius: 8px;"
+    loading="lazy"
+  />
+  <figcaption style="margin-top: 8px; font-size: 14px; color: #666;">
+    사진 소스 -
+    <a href="https://www.pexels.com/@wahlex-1869682520/" target="_blank" rel="noopener noreferrer">Wahlex</a>,
+    pexels.com
+  </figcaption>
+</figure>
+
 ## 목차
 
 - [무엇을 만들게 되나?](#무엇을-만들게-되나)

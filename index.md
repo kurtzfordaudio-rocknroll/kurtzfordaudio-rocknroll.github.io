@@ -45,8 +45,8 @@ In this tutorial, you will download a checkpoint yourself, convert it to Core ML
 - [Requirements](#requirements)
 - [Step 1. Open Terminal and Create a Working Folder](#step-1-open-terminal-and-create-a-working-folder)
 - [Step 2. Download the Checkpoint](#step-2-download-the-checkpoint)
-- [Step 3. Install Apple Command Line Tools](#step-3-install-apple-command-line-tools)
-- [Step 4. Download the Core ML Converter](#step-4-download-the-core-ml-converter)
+- [Step 3. Download the Converter ZIP](#step-3-download-the-converter-zip)
+- [Step 4. Extract the Core ML Converter](#step-4-extract-the-core-ml-converter)
 - [Step 5. Install Python and Create a Dedicated Environment](#step-5-install-python-and-create-a-dedicated-environment)
 - [Step 6. Copy the Checkpoint into the PyTorch Cache](#step-6-copy-the-checkpoint-into-the-pytorch-cache)
 - [Step 7. Make a Few Changes to the Conversion Code](#step-7-make-a-few-changes-to-the-conversion-code)
@@ -141,59 +141,30 @@ In Finder, open your `Downloads` folder and confirm that `5c90dfd2-34c22ccb.th` 
 
 ---
 
-## Step 3. Install Apple Command Line Tools
+## Step 3. Download the Converter ZIP
 
-**Apple Command Line Tools** provide basic development commands for your Mac.
-
-First, check whether they are already installed by running this command in Terminal:
-
-```
-xcode-select -p
-```
-
-If you see `/Library/Developer/CommandLineTools` or another installation path, they are already installed.
-
-If the command instead displays an error, run:
-
-```
-xcode-select --install
-```
-
-When the installation window appears, click **Install** and follow the instructions. After installation, run `xcode-select -p` again to confirm the path.
-
-Also check that **Git**, included with Apple Command Line Tools, is available:
-
-```
-git --version
-```
-
-If Git prints a version number, you are ready to continue.
+Open the [dexxdean/htdemucs-coreml repository](https://github.com/dexxdean/htdemucs-coreml) in your web browser. Click the green **Code** button, then choose **Download ZIP**. The file `htdemucs-coreml-main.zip` will be saved to `~/Downloads` (unless you changed your browser download location).
 
 ---
 
-## Step 4. Download the Core ML Converter
+## Step 4. Extract the Core ML Converter
 
 We will use the [dexxdean/htdemucs-coreml](https://github.com/dexxdean/htdemucs-coreml) project to convert HTDemucs into Core ML. This converter is originally configured for four stems. We will make a few changes to support six stems.
 
-Run the following commands in order. You can paste all four lines into Terminal at once. They move into `~/htdemucs`, clone the Git repository, enter the downloaded project folder, and confirm that two required files are present.
+Run the following commands in Terminal. They copy the ZIP file from `~/Downloads` into `~/htdemucs`, extract it, rename the extracted folder, and confirm that the two required files are present.
 
-```
+```bash
 cd ~/htdemucs
-git clone https://github.com/dexxdean/htdemucs-coreml.git
+cp ~/Downloads/htdemucs-coreml-main.zip .
+unzip htdemucs-coreml-main.zip
+mv htdemucs-coreml-main htdemucs-coreml
 cd htdemucs-coreml
 ls convert.py requirements.txt
 ```
 
-A successful result should look similar to this:
+A successful result should look like this:
 
-```
-Cloning into 'htdemucs-coreml'...
-remote: Enumerating objects: 12, done.
-remote: Counting objects: 100% (12/12), done.
-remote: Compressing objects: 100% (9/9), done.
-remote: Total 12 (delta 1), reused 12 (delta 1), pack-reused 0 (from 0)
-Receiving objects: 100% (12/12), 18.83 KiB | 9.42 MiB/s, done.
-Resolving deltas: 100% (1/1), done.
+```text
 convert.py       requirements.txt
 ```
 
@@ -402,7 +373,7 @@ Converting this complex neural network can increase memory use. Check that conve
 
 The maximum output difference (`Max diff`) and average output difference (`Mean diff`) are better when smaller. The message `Validation OK.` indicates that the converter's validation passed.
 
-You can ignore the `Next step:` message at the end; it is intended for Xcode developers. We will test the converted Core ML model on actual audio in the next steps.
+We will test the converted Core ML model on actual audio in the next steps.
 
 Check that the model package `HTDemucs_CoreML_FP16.mlpackage` was created:
 

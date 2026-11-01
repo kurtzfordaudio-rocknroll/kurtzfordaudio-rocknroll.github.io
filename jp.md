@@ -45,8 +45,8 @@ AI研究者の**Alexandre Défossez氏と共同研究者たち**は、この課�
 - [準備するもの](#準備するもの)
 - [ステップ1. ターミナルを開いて作業フォルダを作る](#ステップ1-ターミナルを開いて作業フォルダを作る)
 - [ステップ2. チェックポイントをダウンロードする](#ステップ2-チェックポイントをダウンロードする)
-- [ステップ3. Appleのコマンドラインツールをインストールする](#ステップ3-appleのコマンドラインツールをインストールする)
-- [ステップ4. Core ML変換ツールをダウンロードする](#ステップ4-core-ml変換ツールをダウンロードする)
+- [ステップ3. 変換ツールのZIPファイルをダウンロードする](#ステップ3-変換ツールのzipファイルをダウンロードする)
+- [ステップ4. Core ML変換ツールを展開する](#ステップ4-core-ml変換ツールを展開する)
 - [ステップ5. Pythonをインストールして専用環境を作る](#ステップ5-pythonをインストールして専用環境を作る)
 - [ステップ6. チェックポイントをPyTorchのキャッシュに置く](#ステップ6-チェックポイントをpytorchのキャッシュに置く)
 - [ステップ7. 変換コードを少し修正する](#ステップ7-変換コードを少し修正する)
@@ -141,59 +141,30 @@ Finderで`Downloads`フォルダを開き、`5c90dfd2-34c22ccb.th`があるこ�
 
 ---
 
-## ステップ3. Appleのコマンドラインツールをインストールする
+## ステップ3. 変換ツールのZIPファイルをダウンロードする
 
-**Apple Command Line Tools**は、Macで開発関連のコマンドを利用するための基本ツールです。
-
-まず、すでにインストールされているか確認します。ターミナルで次のコマンドを実行します。
-
-```
-xcode-select -p
-```
-
-`/Library/Developer/CommandLineTools`または別のインストール先のパスが表示されたら、すでにインストールされています。
-
-エラーが表示された場合は、次のコマンドを実行します。
-
-```
-xcode-select --install
-```
-
-インストール画面が表示されたら、**インストール（Install）**をクリックして案内に従ってください。完了後、`xcode-select -p`を再実行してパスを確認します。
-
-Apple Command Line Toolsに含まれる**Git**も使えるか確認します。
-
-```
-git --version
-```
-
-Gitのバージョン番号が表示されれば準備完了です。
+ブラウザで[dexxdean/htdemucs-coremlリポジトリ](https://github.com/dexxdean/htdemucs-coreml)を開きます。緑色の**Code**ボタンをクリックし、**Download ZIP**を選びます。ブラウザのダウンロード先を変更していなければ、`htdemucs-coreml-main.zip`が`~/Downloads`に保存されます。
 
 ---
 
-## ステップ4. Core ML変換ツールをダウンロードする
+## ステップ4. Core ML変換ツールを展開する
 
 HTDemucsをCore MLに変換するため、[dexxdean/htdemucs-coreml](https://github.com/dexxdean/htdemucs-coreml)プロジェクトを使用します。この変換ツールは、もともと4ステム用に設定されています。6ステムに対応できるよう少し修正します。
 
-次のコマンドを順番に実行します。4行まとめてターミナルに貼り付けても構いません。`~/htdemucs`への移動、Gitリポジトリの取得、プロジェクトフォルダへの移動、必要な2つのファイルの確認を行います。
+次のコマンドをターミナルで順番に実行します。`~/Downloads`のZIPファイルを`~/htdemucs`にコピーして展開し、フォルダ名を変更して、必要な2つのファイルを確認します。
 
-```
+```bash
 cd ~/htdemucs
-git clone https://github.com/dexxdean/htdemucs-coreml.git
+cp ~/Downloads/htdemucs-coreml-main.zip .
+unzip htdemucs-coreml-main.zip
+mv htdemucs-coreml-main htdemucs-coreml
 cd htdemucs-coreml
 ls convert.py requirements.txt
 ```
 
-成功すると、次のような出力が表示されます。
+成功すると、次のように表示されます。
 
-```
-Cloning into 'htdemucs-coreml'...
-remote: Enumerating objects: 12, done.
-remote: Counting objects: 100% (12/12), done.
-remote: Compressing objects: 100% (9/9), done.
-remote: Total 12 (delta 1), reused 12 (delta 1), pack-reused 0 (from 0)
-Receiving objects: 100% (12/12), 18.83 KiB | 9.42 MiB/s, done.
-Resolving deltas: 100% (1/1), done.
+```text
 convert.py       requirements.txt
 ```
 
@@ -402,7 +373,7 @@ python convert.py --fp16 --compute-units cpu_and_gpu
 
 出力値の最大差（`Max diff`）と平均差（`Mean diff`）は、小さいほど良い値です。`Validation OK.`は変換ツールの検証に合格したことを示します。
 
-最後に表示される`Next step:`はXcode開発者向けの案内なので、無視して構いません。次のステップでは、作成したCore MLモデルを使って実際の音声を分離します。
+次のステップでは、作成したCore MLモデルを使って実際の音声を分離します。
 
 モデルパッケージ`HTDemucs_CoreML_FP16.mlpackage`が作成されたことを確認します。
 

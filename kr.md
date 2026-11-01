@@ -45,8 +45,8 @@ AI 연구자 **Alexandre Défossez와 공동 연구자들** 은 이 문제를 �
 - [준비](#준비)
 - [1단계. 터미널 열고 작업 폴더 만들기](#1단계-터미널-열고-작업-폴더-만들기)
 - [2단계. 체크포인트 다운로드하기](#2단계-체크포인트-다운로드하기)
-- [3단계. Apple 개발 도구 설치하기](#3단계-apple-개발-도구-설치하기)
-- [4단계. Core ML 변환기 다운로드하기](#4단계-core-ml-변환기-다운로드하기)
+- [3단계. 변환기 ZIP 파일 다운로드하기](#3단계-변환기-zip-파일-다운로드하기)
+- [4단계. Core ML 변환기 압축 풀기](#4단계-core-ml-변환기-압축-풀기)
 - [5단계. Python 설치하고 전용 작업 공간 만들기](#5단계-python-설치하고-전용-작업-공간-만들기)
 - [6단계. 다운로드한 체크포인트를 PyTorch 캐시에 넣기](#6단계-다운로드한-체크포인트를-pytorch-캐시에-넣기)
 - [7단계. 변환용 코드 약간 수정하기](#7단계-변환용-코드-약간-수정하기)
@@ -141,59 +141,30 @@ Finder에서 `Downloads` 폴더를 열고 `5c90dfd2-34c22ccb.th` 파일이 받�
 
 ---
 
-## 3단계. Apple 개발 도구 설치하기
+## 3단계. 변환기 ZIP 파일 다운로드하기
 
-**Apple 개발 도구(Command Line Tools)** 는 Mac에서 프로그래밍 관련 명령을 사용할 수 있도록 해 주는 기본 도구 묶음입니다.
-
-먼저 설치 여부를 확인합니다. 터미널에서 아래 명령을 실행합니다.
-
-```
-xcode-select -p
-```
-
-`/Library/Developer/CommandLineTools` 또는 다른 설치 경로가 출력되면 이미 설치된 것입니다.
-
-경로가 출력되는 대신 오류가 나타나면 다음 명령을 실행합니다.
-
-```
-xcode-select --install
-```
-
-설치 창이 나타나면 **설치(Install)**를 클릭하고 화면의 안내를 따르세요. 설치가 끝난 뒤 터미널에서 `xcode-select -p`를 다시 실행해 경로를 확인합니다.
-
-Apple 개발 도구에 기본 포함된 Git도 정상적으로 설치되었는지 확인합니다.
-
-```
-git --version
-```
-
-Git 버전 번호가 출력되면 준비가 끝난 것입니다.
+웹 브라우저에서 [dexxdean/htdemucs-coreml 저장소](https://github.com/dexxdean/htdemucs-coreml)를 엽니다. 초록색 **Code** 버튼을 클릭한 다음 **Download ZIP**을 선택합니다. 브라우저의 다운로드 경로를 변경하지 않았다면 `htdemucs-coreml-main.zip` 파일이 `~/Downloads`에 저장됩니다.
 
 ---
 
-## 4단계. Core ML 변환기 다운로드하기
+## 4단계. Core ML 변환기 압축 풀기
 
 HTDemucs를 Core ML로 바꾸기 위해 [dexxdean/htdemucs-coreml](https://github.com/dexxdean/htdemucs-coreml) 프로젝트를 사용합니다. 이 변환기는 원래 4-stem을 다루도록 구성되어 있습니다. 6-stem을 다룰 수 있게 약간 변경하겠습니다.
 
-아래 명령을 차례대로 실행합니다. 네 줄을 한꺼번에 프롬프트에 복사해서 붙여도 됩니다. 그러면 `~/htdemucs`로 이동, git 저장소에서 프로젝트 다운로드, 다운로드한 프로젝트 폴더로 이동, 두개의 파일이 들어있나 확인까지 한꺼번에 수행합니다.
+아래 명령을 터미널에서 차례대로 실행합니다. `~/Downloads`의 ZIP 파일을 `~/htdemucs`로 복사하고, 압축을 풀고, 폴더 이름을 정리한 다음 필요한 두 파일이 있는지 확인합니다.
 
-```
+```bash
 cd ~/htdemucs
-git clone https://github.com/dexxdean/htdemucs-coreml.git
+cp ~/Downloads/htdemucs-coreml-main.zip .
+unzip htdemucs-coreml-main.zip
+mv htdemucs-coreml-main htdemucs-coreml
 cd htdemucs-coreml
 ls convert.py requirements.txt
 ```
 
-다음과 같이 출력되었다면 성공입니다.
+다음과 같이 출력되면 성공입니다.
 
-```
-Cloning into 'htdemucs-coreml'...
-remote: Enumerating objects: 12, done.
-remote: Counting objects: 100% (12/12), done.
-remote: Compressing objects: 100% (9/9), done.
-remote: Total 12 (delta 1), reused 12 (delta 1), pack-reused 0 (from 0)
-Receiving objects: 100% (12/12), 18.83 KiB | 9.42 MiB/s, done.
-Resolving deltas: 100% (1/1), done.
+```text
 convert.py       requirements.txt
 ```
 
@@ -402,7 +373,7 @@ python convert.py --fp16 --compute-units cpu_and_gpu
 
 가장 큰 출력값 차이 (`Max diff`)와 평균 출력값 차이 (`Mean diff`)는 작을 수록 좋습니다. `Validation OK.` 문구가 보인다면 성공입니다.
 
-마지막에 출력되는 `Next step:` 안내는 Xcode 개발자를 위한 것이므로 무시해도 됩니다. 우리는 다음 단계에서 생성된 Core ML 모델을 이용해 실제 음악 파일을 분리해 보겠습니다.
+다음 단계에서는 생성된 Core ML 모델을 이용해 실제 음악 파일을 분리해 보겠습니다.
 
 모델 패키지 `HTDemucs_CoreML_FP16.mlpackage`가 잘 만들어졌는지 다음 명령으로 확인합니다.
 

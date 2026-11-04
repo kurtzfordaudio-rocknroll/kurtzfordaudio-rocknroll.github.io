@@ -188,6 +188,19 @@ python3.9 --version
 
 `Python 3.9.x`가 나오면 5-2로 넘어갑니다. `command not found` 같은 메시지가 나오면 [Python 공식 사이트](https://www.python.org/downloads/macos/)에서 Python 3.9용 macOS 설치 프로그램을 다운로드하여 설치하세요. Intel Mac과 Apple Silicon Mac 모두 지원하는 설치 프로그램을 선택합니다.
 
+<figure style="margin: 24px 0; text-align: center;">
+  <img
+    src="./images/PythonDownload.png"
+    alt="맥용 파이썬 다운로드 페이지"
+    style="width: 100%; max-width: 900px; height: auto;"
+    loading="lazy"
+  />
+  <figcaption style="margin-top: 8px; font-size: 14px; color: #666;">
+    Python 3.9.x macOS 64-bit universal2 installer 를
+    <a href="https://www.python.org/downloads/macos/" target="_blank" rel="noopener noreferrer">공식 파이썬 웹사이트</a> 에서 다룬로드받아 설치합니다.
+  </figcaption>
+</figure>
+
 확인을 위해 설치 후 터미널에서 위의 명령을 다시 실행해 봅니다.
 
 ### 5-2. 작업 공간 만들기

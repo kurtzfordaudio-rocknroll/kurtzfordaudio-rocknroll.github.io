@@ -199,7 +199,7 @@ If you see `Python 3.9.x`, continue to Step 5-2. If you see `command not found` 
   />
   <figcaption style="margin-top: 8px; font-size: 14px; color: #666;">
     Download the Python 3.9.x macOS 64-bit universal2 installer from the
-    <a href="https://www.python.org/downloads/macos/" target="_blank " rel="noopener noreferrer">official Python website</a>.
+    <a href="https://www.python.org/downloads/macos/" target="_blank" rel="noopener noreferrer">official Python website</a>.
   </figcaption>
 </figure>
 

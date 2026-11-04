@@ -107,11 +107,7 @@ Alternatively, press `⌘ Command + Space`, search for `Terminal`, and press Ret
 
 After opening Terminal, you will see a **prompt** similar to the one below. The `~` indicates your Mac user's home folder. The prompt is showing that your **current working directory is your home folder**.
 
-```text
-username@Mac-name ~ %
-```
-
-{: .no-copy}
+<pre class="no-copy"><code>username@Mac-name ~ %</code></pre>
 
 You can type commands at the end of the prompt.
 
@@ -120,10 +116,12 @@ You can type commands at the end of the prompt.
 Copy all four commands below, paste them into Terminal, and press Return (Enter). The commands will run in sequence.
 
 ```
+
 mkdir -p ~/htdemucs
 cd ~/htdemucs
 pwd
 ls
+
 ```
 
 These commands will:

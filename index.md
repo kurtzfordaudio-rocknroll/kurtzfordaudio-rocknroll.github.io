@@ -107,9 +107,11 @@ Alternatively, press `⌘ Command + Space`, search for `Terminal`, and press Ret
 
 After opening Terminal, you will see a **prompt** similar to the one below. The `~` indicates your Mac user's home folder. The prompt is showing that your **current working directory is your home folder**.
 
-```text {.no-copy}
+```text
 username@Mac-name ~ %
 ```
+
+{: .no-copy}
 
 You can type commands at the end of the prompt.
 

@@ -109,8 +109,11 @@
 
     <script>
         document.querySelectorAll("pre").forEach((pre) => {
-            if (pre.classList.contains('no-copy') ||
-                pre.querySelector('.no-copy')) {
+            if (
+                pre.classList.contains("no-copy") ||
+                pre.querySelector(".no-copy") ||
+                pre.parentElement.classList.contains("no-copy")
+            ) {
                 return;
             }
 

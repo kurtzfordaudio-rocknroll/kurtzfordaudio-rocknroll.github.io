@@ -107,9 +107,7 @@ AI研究者の**Alexandre Défossez氏と共同研究者たち**は、この課�
 
 ターミナルを開くと、次のような**プロンプト（prompt）**が表示されます。`~`はMacユーザーのホームフォルダを表します。つまり、プロンプトは**現在の作業場所がホームフォルダである**ことを示しています。
 
-```text
-ユーザー名@Mac名 ~ %
-```
+<pre class="no-copy"><code>ユーザー名@Mac名 ~ %</code></pre>
 
 プロンプトの末尾にコマンドを入力できます。
 
@@ -172,9 +170,7 @@ ls convert.py requirements.txt
 
 成功すると、次のように表示されます。
 
-```text
-convert.py       requirements.txt
-```
+<pre class="no-copy"><code>convert.py       requirements.txt</code></pre>
 
 ---
 
@@ -192,6 +188,19 @@ python3.9 --version
 
 `Python 3.9.x`と表示されればステップ5-2に進みます。`command not found`などのメッセージが表示された場合は、[Python公式サイト](https://www.python.org/downloads/macos/)からmacOS用Python 3.9のインストーラをダウンロードしてインストールしてください。Intel MacまたはApple Silicon Macに対応するインストーラを選びます。
 
+<figure style="margin: 24px 0; text-align: center;">
+  <img
+    src="./images/PythonDownload.png"
+    alt="PythonのmacOS向けダウンロードページ"
+    style="width: 100%; max-width: 900px; height: auto;"
+    loading="lazy"
+  />
+  <figcaption style="margin-top: 8px; font-size: 14px; color: #666;">
+    <a href="https://www.python.org/downloads/macos/" target="_blank" rel="noopener noreferrer">Python公式サイト</a>から、
+    Python 3.9.x の macOS 64-bit universal2 インストーラーをダウンロードしてください。
+  </figcaption>
+</figure>
+
 インストール後、同じコマンドでもう一度確認してください。
 
 ### 5-2. 作業環境を作る
@@ -208,9 +217,7 @@ source .venv/bin/activate
 
 ターミナルのプロンプトの先頭に`(.venv)`が表示されれば、**このチュートリアル用の仮想環境が有効になっています**。
 
-```text
-(.venv) ユーザー名@Mac名 ~/htdemucs/htdemucs-coreml %
-```
+<pre class="no-copy"><code>(.venv) ユーザー名@Mac名 ~/htdemucs/htdemucs-coreml %</code></pre>
 
 `(.venv)`の隣に`(base)`が表示されても問題ありません。
 
@@ -311,12 +318,10 @@ python prepare_six_stem.py
 
 **想定される出力：**
 
-```text
-SUCCESS: convert.py adapted for six stems.
+<pre class="no-copy"><code>SUCCESS: convert.py adapted for six stems.
 Backup: convert.py.original-4stem
 Model: htdemucs_6s
-Output: drums, bass, vocals, guitar, piano, other
-```
+Output: drums, bass, vocals, guitar, piano, other</code></pre>
 
 ### 7-2. 変更内容を確認する
 
@@ -335,12 +340,10 @@ PY
 
 次のように表示されれば正常です。
 
-```python
-MODEL_NAME = "htdemucs_6s"
+<pre class="no-copy"><code>MODEL_NAME = "htdemucs_6s"
 NUM_SOURCES = 6
 SOURCE_REORDER = [0, 1, 3, 4, 5, 2]
-SOURCE_NAMES = ["drums", "bass", "vocals", "guitar", "piano", "other"]
-```
+SOURCE_NAMES = ["drums", "bass", "vocals", "guitar", "piano", "other"]</code></pre>
 
 ### なぜ変換ツールを修正するのか？
 
@@ -361,23 +364,19 @@ python convert.py --fp16 --compute-units cpu_and_gpu
 
 変換中は、次のような処理段階が表示されます。
 
-```text
-[1/5] Loading Demucs 'htdemucs_6s' ...
+<pre class="no-copy"><code>[1/5] Loading Demucs 'htdemucs_6s' ...
 [2/5] Building real-valued wrapper ...
 [3/5] PyTorch forward pass ...
 [4/5] torch.jit.trace ...
-[5/5] Core ML conversion ...
-```
+[5/5] Core ML conversion ...</code></pre>
 
 複雑なニューラルネットワークの変換には多くのメモリが必要になる場合があります。変換と検証が**エラーなく終了したこと**を確認してください。次のような検証結果が表示されれば正常です。
 
-```
-[Val] Validating Core ML vs. PyTorch reference ...
+<pre class="no-copy"><code>[Val] Validating Core ML vs. PyTorch reference ...
 
       Max diff:  0.005583
       Mean diff: 0.000232
-      Validation OK.
-```
+      Validation OK.</code></pre>
 
 出力値の最大差（`Max diff`）と平均差（`Mean diff`）は、小さいほど良い値です。`Validation OK.`は変換ツールの検証に合格したことを示します。
 
@@ -412,12 +411,10 @@ PY
 
 確認には少し時間がかかる場合があります。次のような値が表示されます。
 
-```text
-Inputs:
+<pre class="no-copy"><code>Inputs:
   audio [1, 2, 441000]
 Outputs:
-  sources [1, 6, 2, 441000]
-```
+  sources [1, 6, 2, 441000]</code></pre>
 
 `[1, 6, 2, 441000]`は、1回の音声処理で6つのステムが生成され、各ステムが左右2チャンネルと441,000サンプル（44.1 kHzで10秒分）で構成されることを意味します。
 

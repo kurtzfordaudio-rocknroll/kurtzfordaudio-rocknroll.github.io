@@ -107,9 +107,7 @@ AI 연구자 **Alexandre Défossez와 공동 연구자들** 은 이 문제를 �
 
 터미널을 열면 다음과 비슷한 **프롬프트(prompt)** 가 보입니다. `~`는 Mac 사용자의 홈 폴더를 뜻합니다. 프롬프트가 **현재 작업 위치는 당신의 홈 폴더입니다** 라고 표시해주고 있습니다.
 
-```text
-사용자이름@Mac이름 ~ %
-```
+<pre class="no-copy"><code>사용자이름@Mac이름 ~ %</code></pre>
 
 프롬프트 끝에 작업 지시 명령을 입력할 수 있습니다.
 
@@ -172,9 +170,7 @@ ls convert.py requirements.txt
 
 다음과 같이 출력되면 성공입니다.
 
-```text
-convert.py       requirements.txt
-```
+<pre class="no-copy"><code>convert.py       requirements.txt</code></pre>
 
 ---
 
@@ -208,9 +204,7 @@ source .venv/bin/activate
 
 이 명령들을 실행하고 나서부터 터미널 프롬프트 앞에 `(.venv)`가 나타나면 성공입니다. 이것은 **이번 작업용 Python 가상환경이 활성화되었다는 표시** 입니다.
 
-```text
-(.venv) 사용자이름@Mac이름 ~/htdemucs/htdemucs-coreml %
-```
+<pre class="no-copy"><code>(.venv) 사용자이름@Mac이름 ~/htdemucs/htdemucs-coreml %</code></pre>
 
 `(.venv)` 옆에 `(base)` 가 보여도 상관 없습니다.
 
@@ -311,12 +305,10 @@ python prepare_six_stem.py
 
 **예상 결과:**
 
-```text
-SUCCESS: convert.py adapted for six stems.
+<pre class="no-copy"><code>SUCCESS: convert.py adapted for six stems.
 Backup: convert.py.original-4stem
 Model: htdemucs_6s
-Output: drums, bass, vocals, guitar, piano, other
-```
+Output: drums, bass, vocals, guitar, piano, other</code></pre>
 
 ### 7-2. 수정 결과 확인
 
@@ -335,12 +327,10 @@ PY
 
 다음과 같이 결과가 출력되면 정상입니다.
 
-```python
-MODEL_NAME = "htdemucs_6s"
+<pre class="no-copy"><code>MODEL_NAME = "htdemucs_6s"
 NUM_SOURCES = 6
 SOURCE_REORDER = [0, 1, 3, 4, 5, 2]
-SOURCE_NAMES = ["drums", "bass", "vocals", "guitar", "piano", "other"]
-```
+SOURCE_NAMES = ["drums", "bass", "vocals", "guitar", "piano", "other"]</code></pre>
 
 ### 왜 변환기를 직접 수정하나?
 
@@ -361,23 +351,19 @@ python convert.py --fp16 --compute-units cpu_and_gpu
 
 변환기 실행 중 화면에는 다음 단계가 표시됩니다.
 
-```text
-[1/5] Loading Demucs 'htdemucs_6s' ...
+<pre class="no-copy"><code>[1/5] Loading Demucs 'htdemucs_6s' ...
 [2/5] Building real-valued wrapper ...
 [3/5] PyTorch forward pass ...
 [4/5] torch.jit.trace ...
-[5/5] Core ML conversion ...
-```
+[5/5] Core ML conversion ...</code></pre>
 
 복잡한 신경망을 변환하므로 작업 중 메모리 사용량이 증가할 수 있습니다. **오류가 출력되지 않고 변환 및 검증 절차가 끝났는지** 확인하세요. 아래와 같은 검증 결과가 보이면 됩니다.
 
-```
-[Val] Validating Core ML vs. PyTorch reference ...
+<pre class="no-copy"><code>[Val] Validating Core ML vs. PyTorch reference ...
 
       Max diff:  0.005583
       Mean diff: 0.000232
-      Validation OK.
-```
+      Validation OK.</code></pre>
 
 가장 큰 출력값 차이 (`Max diff`)와 평균 출력값 차이 (`Mean diff`)는 작을 수록 좋습니다. `Validation OK.` 문구가 보인다면 성공입니다.
 
@@ -412,12 +398,10 @@ PY
 
 확인하는데 시간이 약간 걸립니다. 확인할 값은 다음과 같습니다.
 
-```text
-Inputs:
+<pre class="no-copy"><code>Inputs:
   audio [1, 2, 441000]
 Outputs:
-  sources [1, 6, 2, 441000]
-```
+  sources [1, 6, 2, 441000]</code></pre>
 
 [1, 6, 2, 441000]은 한 번의 오디오 처리로 6개의 Stem이 생성되고, 각 Stem은 2채널(왼쪽/오른쪽), 441000샘플(10초 분량)로 구성된다는 뜻입니다.
 

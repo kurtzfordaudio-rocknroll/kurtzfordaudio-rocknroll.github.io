@@ -172,9 +172,7 @@ ls convert.py requirements.txt
 
 A successful result should look like this:
 
-```text {.no-copy}
-convert.py       requirements.txt
-```
+<pre class="no-copy"><code>convert.py       requirements.txt</code></pre>
 
 ---
 
@@ -192,6 +190,19 @@ python3.9 --version
 
 If you see `Python 3.9.x`, continue to Step 5-2. If you see `command not found` or a similar message, download and install the macOS installer for Python 3.9 from the [official Python website](https://www.python.org/downloads/macos/). Choose an installer compatible with your Mac's processor (Intel or Apple Silicon).
 
+<figure style="margin: 24px 0; text-align: center;">
+  <img
+    src="./images/PythonDownload.png"
+    alt="Python download page for macOS"
+    style="width: 100%; max-width: 900px; height: auto;"
+    loading="lazy"
+  />
+  <figcaption style="margin-top: 8px; font-size: 14px; color: #666;">
+    Download the Python 3.9.x macOS 64-bit universal2 installer from the
+    <a href="https://www.python.org/downloads/macos/" target="_blank" rel="noopener noreferrer">official Python website</a>.
+  </figcaption>
+</figure>
+
 After installation, run the same command again to confirm the version.
 
 ### 5-2. Create a Working Environment
@@ -208,9 +219,7 @@ source .venv/bin/activate
 
 If `(.venv)` appears at the start of the Terminal prompt, the **virtual environment for this tutorial is active**.
 
-```text {.no-copy}
-(.venv) username@Mac-name ~/htdemucs/htdemucs-coreml %
-```
+<pre class="no-copy"><code>(.venv) username@Mac-name ~/htdemucs/htdemucs-coreml %</code></pre>
 
 It is also fine if `(base)` appears next to `(.venv)`.
 
@@ -311,12 +320,10 @@ The script backs up `convert.py` as `convert.py.original-4stem`, then modifies s
 
 **Expected output:**
 
-```text {.no-copy}
-SUCCESS: convert.py adapted for six stems.
+<pre class="no-copy"><code>SUCCESS: convert.py adapted for six stems.
 Backup: convert.py.original-4stem
 Model: htdemucs_6s
-Output: drums, bass, vocals, guitar, piano, other
-```
+Output: drums, bass, vocals, guitar, piano, other</code></pre>
 
 ### 7-2. Verify the Changes
 
@@ -335,12 +342,10 @@ PY
 
 The output should look like this:
 
-```python {.no-copy}
-MODEL_NAME = "htdemucs_6s"
+<pre class="no-copy"><code>MODEL_NAME = "htdemucs_6s"
 NUM_SOURCES = 6
 SOURCE_REORDER = [0, 1, 3, 4, 5, 2]
-SOURCE_NAMES = ["drums", "bass", "vocals", "guitar", "piano", "other"]
-```
+SOURCE_NAMES = ["drums", "bass", "vocals", "guitar", "piano", "other"]</code></pre>
 
 ### Why Do We Need to Modify the Converter?
 
@@ -361,23 +366,19 @@ python convert.py --fp16 --compute-units cpu_and_gpu
 
 During conversion, you will see stages similar to the following:
 
-```text {.no-copy}
-[1/5] Loading Demucs 'htdemucs_6s' ...
+<pre class="no-copy"><code>[1/5] Loading Demucs 'htdemucs_6s' ...
 [2/5] Building real-valued wrapper ...
 [3/5] PyTorch forward pass ...
 [4/5] torch.jit.trace ...
-[5/5] Core ML conversion ...
-```
+[5/5] Core ML conversion ...</code></pre>
 
 Converting this complex neural network can increase memory use. Check that conversion and validation finish **without errors**. You should see a validation result like this:
 
-```{.no-copy}
-[Val] Validating Core ML vs. PyTorch reference ...
+<pre class="no-copy"><code>[Val] Validating Core ML vs. PyTorch reference ...
 
       Max diff:  0.005583
       Mean diff: 0.000232
-      Validation OK.
-```
+      Validation OK.</code></pre>
 
 The maximum output difference (`Max diff`) and average output difference (`Mean diff`) are better when smaller. The message `Validation OK.` indicates that the converter's validation passed.
 
@@ -412,12 +413,10 @@ PY
 
 This check may take a little time. You should see:
 
-```text {.no-copy}
-Inputs:
+<pre class="no-copy"><code>Inputs:
   audio [1, 2, 441000]
 Outputs:
-  sources [1, 6, 2, 441000]
-```
+  sources [1, 6, 2, 441000]</code></pre>
 
 The shape `[1, 6, 2, 441000]` means that one audio input produces six stems, each with two channels (left and right) containing 441,000 samples (10 seconds at 44.1 kHz).
 

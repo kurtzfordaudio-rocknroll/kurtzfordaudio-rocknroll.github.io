@@ -14,7 +14,7 @@ author: K. Ford
 
 **HTDemucs 6-StemのチェックポイントをCore ML FP16モデルに変換し、自分の音楽ファイルで試してみよう**
 
-**所要時間の目安：** 約30分  
+**所要時間の目安：** 約20分  
 **完成するもの：** macOS 13以降での利用を想定した音源分離用Core MLパッケージ `HTDemucs_CoreML_FP16.mlpackage`
 
 ボーカル、ドラム、ベース、ギター、ピアノなど、さまざまな音がミックスされた楽曲から、それぞれの楽器の音を取り出すことはできるでしょうか。
@@ -68,6 +68,26 @@ AI研究者の**Alexandre Défossez氏と共同研究者たち**は、この課�
 - **ターミナル（Terminal）アプリ**（macOSに標準搭載）
 - **Webブラウザ**（チェックポイントなどのダウンロードに使用）
 - **実習用の音声 `test_10s.wav`**（このチュートリアルで提供 — [`test_10s.wav`](resources/test_10s.wav)）
+
+## このモデルをどのように活用できますか？
+
+<div style="background:#fff5e6; border-left:4px solid #b86119; border-radius:8px; padding:18px 22px; margin:20px 0 24px;">
+  <div style="color:#a45316; font-size:17px; font-weight:700; margin-bottom:8px;">
+    モデルを活用する準備ができました
+  </div>
+  <div style="color:#553c25; line-height:1.7;">
+    生成された
+    <strong><code>HTDemucs_CoreML_FP16.mlpackage</code></strong>
+    は、
+    <strong>個人の音楽練習、アプリケーション開発、研究など、さまざまな用途に活用できます。</strong>
+  </div>
+</div>
+
+お使いの音楽練習アプリがユーザー提供のCore MLモデルに対応している場合、このモデルを読み込むことで、楽曲をドラム、ベース、ボーカル、ギター、ピアノ、その他の音の6つのステム（Stem）に分離できます。特定の楽器を抽出または除去し、自分の練習用バッキングトラックを作成することもできます。
+
+開発者や研究者は、このモデルを独自のアプリケーション、オーディオ処理ワークフロー（Workflow）、研究プロジェクトに組み込むこともできます。
+
+**互換性に関する注意：** アプリケーションは、モデルの入出力仕様に対応している必要があります。これには、正確なステムの順序（ドラム、ベース、ボーカル、ギター、ピアノ、その他）、出力形式（Output Format）、テンソルの次元（Tensor Dimensions）が含まれます。
 
 ---
 

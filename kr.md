@@ -14,7 +14,7 @@ author: K. Ford
 
 **HTDemucs 6-Stem 체크포인트를 Core ML FP16 모델로 변환하고 내 음악 파일에 적용해보기**
 
-**예상 시간:** 30분 내외  
+**예상 시간:** 20분 내외  
 **최종 결과:** macOS 13 이상에서 사용 가능한 음원 분리용 Core ML 패키지 `HTDemucs_CoreML_FP16.mlpackage`
 
 보컬, 드럼, 베이스, 기타, 피아노 등 여러 소리가 믹싱된 음원에서 각 악기의 소리를 다시 분리해 낼 수 있을까?
@@ -68,6 +68,26 @@ AI 연구자 **Alexandre Défossez와 공동 연구자들** 은 이 문제를 �
 - **터미널(Terminal) 앱** (Mac에 기본 설치된 앱)
 - **웹 브라우저** (체크포인트 다운로드 등에 필요)
 - **실습용 음원 `test_10s.wav`** (이 튜토리얼에서 제공 - [`test_10s.wav`](resources/test_10s.wav))
+
+## 모델 활용
+
+<div style="background:#fff5e6; border-left:4px solid #b86119; border-radius:8px; padding:18px 22px; margin:20px 0 24px;">
+  <div style="color:#a45316; font-size:17px; font-weight:700; margin-bottom:8px;">
+    스템 분리 모델을 만들었다면!
+  </div>
+  <div style="color:#553c25; line-height:1.7;">
+    생성된
+    <strong><code>HTDemucs_CoreML_FP16.mlpackage</code></strong>
+    모델은
+    <strong>개인 음악 연습, 애플리케이션 개발, 연구 등 다양한 용도로 활용할 수 있습니다.</strong>
+  </div>
+</div>
+
+음악 연습 앱이 사용자 제공 Core ML 모델을 지원한다면, 이 모델을 불러와 곡을 드럼, 베이스, 보컬, 기타, 피아노, 그 외 사운드의 6개 스템(Stem)으로 분리할 수 있습니다. 특정 악기를 분리하거나 제거하여 개인 연습용 반주 트랙을 만들 수도 있습니다.
+
+개발자와 연구자는 이 모델을 자체 애플리케이션, 오디오 처리 워크플로(Workflow), 연구 프로젝트에 통합할 수도 있습니다.
+
+**호환성 참고:** 애플리케이션은 모델의 입력 및 출력 규격, 즉 스템 순서(드럼, 베이스, 보컬, 기타, 피아노, 기타 사운드), 출력 형식(Output Format), 텐서 차원(Tensor Dimensions) 호환성을 고려해야 합니다.
 
 ---
 

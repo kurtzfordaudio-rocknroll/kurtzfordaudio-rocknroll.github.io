@@ -14,7 +14,7 @@ author: K. Ford
 
 **Convert an HTDemucs 6-Stem checkpoint into a Core ML FP16 model and try it on your own music**
 
-**Estimated time:** About 30 minutes  
+**Estimated time:** About 20 minutes  
 **Final result:** A Core ML package for audio source separation, `HTDemucs_CoreML_FP16.mlpackage`, targeting macOS 13 or later
 
 Can we separate the individual instruments and vocals from a song that mixes drums, bass, guitar, piano, vocals, and other sounds together?
@@ -68,6 +68,26 @@ You will create a Core ML model package named **HTDemucs_CoreML_FP16.mlpackage**
 - **The Terminal app** (included with macOS)
 - **A web browser** (for downloading the checkpoint and other files)
 - **The sample audio `test_10s.wav`** (provided with this tutorial — [`test_10s.wav`](resources/test_10s.wav))
+
+## How Can You Use This Model?
+
+<div style="background:#fff5e6; border-left:4px solid #b86119; border-radius:8px; padding:18px 22px; margin:20px 0 24px;">
+  <div style="color:#a45316; font-size:17px; font-weight:700; margin-bottom:8px;">
+    Your Model Is Ready to Use
+  </div>
+  <div style="color:#553c25; line-height:1.7;">
+    The generated
+    <strong><code>HTDemucs_CoreML_FP16.mlpackage</code></strong>
+    can be used for
+    <strong>personal music practice, application development, research, and so on.</strong>
+  </div>
+</div>
+
+If your music practice app supports user-provided Core ML models, you can load this model to separate songs into drums, bass, vocals, guitar, piano, and other sounds. You can then isolate or remove instruments to create backing tracks for your own practice.
+
+Developers and researchers can also integrate the model into their own applications, audio processing workflows, or research projects.
+
+**Compatibility note:** The application must support the model's input/output specifications, including the exact stem order (drums, bass, vocals, guitar, piano, other), output format, and tensor dimensions.
 
 ---
 

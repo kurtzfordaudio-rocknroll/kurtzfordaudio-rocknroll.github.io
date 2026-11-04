@@ -109,6 +109,11 @@
 
     <script>
         document.querySelectorAll("pre").forEach((pre) => {
+            if (pre.classList.contains('no-copy') ||
+                pre.querySelector('.no-copy')) {
+                return;
+            }
+
             const container = document.createElement("div");
             container.className = "code-container";
             pre.parentNode.insertBefore(container, pre);

@@ -107,7 +107,7 @@ Alternatively, press `⌘ Command + Space`, search for `Terminal`, and press Ret
 
 After opening Terminal, you will see a **prompt** similar to the one below. The `~` indicates your Mac user's home folder. The prompt is showing that your **current working directory is your home folder**.
 
-```text
+```text {.no-copy}
 username@Mac-name ~ %
 ```
 
@@ -115,33 +115,23 @@ You can type commands at the end of the prompt.
 
 ### 1-2. Create a Working Folder
 
-Copy the following command into Terminal and press Return (Enter). You can also type it yourself.
+Copy all four commands below, paste them into Terminal, and press Return (Enter). The commands will run in sequence.
 
 ```
-mkdir ~/htdemucs
-```
-
-`mkdir` means **make a directory**. This command creates an `htdemucs` folder inside your home folder. Normally, no message appears after the command completes. If the folder already exists, you may see `File exists`; simply use the existing folder.
-
-Move into the new folder:
-
-```
+mkdir -p ~/htdemucs
 cd ~/htdemucs
-```
-
-`cd` means **change directory**. Next, check your current location:
-
-```
 pwd
-```
-
-If the path ends in `/htdemucs`, the command worked. Finally, inspect the files in this folder:
-
-```
 ls
 ```
 
-`ls` lists the files in the current folder. A newly created folder may be empty, so nothing may appear.
+These commands will:
+
+1. `mkdir -p ~/htdemucs` - Create an `htdemucs` folder in your home directory if it does not already exist.
+2. `cd ~/htdemucs` - Move into the folder.
+3. `pwd` - Display the current folder path.
+4. `ls` - List the files in the folder.
+
+**Check the result:** The path displayed by pwd should end with /htdemucs. If the folder is empty, ls will display nothing. This is normal.
 
 ---
 
@@ -182,7 +172,7 @@ ls convert.py requirements.txt
 
 A successful result should look like this:
 
-```text
+```text {.no-copy}
 convert.py       requirements.txt
 ```
 
@@ -218,7 +208,7 @@ source .venv/bin/activate
 
 If `(.venv)` appears at the start of the Terminal prompt, the **virtual environment for this tutorial is active**.
 
-```text
+```text {.no-copy}
 (.venv) username@Mac-name ~/htdemucs/htdemucs-coreml %
 ```
 
@@ -321,7 +311,7 @@ The script backs up `convert.py` as `convert.py.original-4stem`, then modifies s
 
 **Expected output:**
 
-```text
+```text {.no-copy}
 SUCCESS: convert.py adapted for six stems.
 Backup: convert.py.original-4stem
 Model: htdemucs_6s
@@ -345,7 +335,7 @@ PY
 
 The output should look like this:
 
-```python
+```python {.no-copy}
 MODEL_NAME = "htdemucs_6s"
 NUM_SOURCES = 6
 SOURCE_REORDER = [0, 1, 3, 4, 5, 2]
@@ -371,7 +361,7 @@ python convert.py --fp16 --compute-units cpu_and_gpu
 
 During conversion, you will see stages similar to the following:
 
-```text
+```text {.no-copy}
 [1/5] Loading Demucs 'htdemucs_6s' ...
 [2/5] Building real-valued wrapper ...
 [3/5] PyTorch forward pass ...
@@ -381,7 +371,7 @@ During conversion, you will see stages similar to the following:
 
 Converting this complex neural network can increase memory use. Check that conversion and validation finish **without errors**. You should see a validation result like this:
 
-```
+```{.no-copy}
 [Val] Validating Core ML vs. PyTorch reference ...
 
       Max diff:  0.005583
@@ -422,7 +412,7 @@ PY
 
 This check may take a little time. You should see:
 
-```text
+```text {.no-copy}
 Inputs:
   audio [1, 2, 441000]
 Outputs:

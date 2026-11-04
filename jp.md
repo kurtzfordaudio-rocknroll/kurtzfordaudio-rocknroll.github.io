@@ -61,19 +61,9 @@ AI研究者の**Alexandre Défossez氏と共同研究者たち**は、この課�
 
 **HTDemucs_CoreML_FP16.mlpackage**というCore MLのAIモデルパッケージを作ります。このモデルは44.1 kHzのステレオ音声を10秒ずつ受け取り、ドラム、ベース、ボーカル、ギター、ピアノ、その他の音に分離します。最後の実習では、提供されるtest_10s.wavを入力して6つのWAVファイルを生成し、それぞれを聴いてみます。適切な処理を追加すれば、10秒より長い音楽ファイルも複数の区間に分けて処理し、結果をつなぎ合わせて連続したステムファイルを作ることができます。
 
-## 準備するもの
-
-- **macOS 13以降を搭載したMac**（Apple SiliconとIntelの両方に対応）
-- **インターネット接続**
-- **ターミナル（Terminal）アプリ**（macOSに標準搭載）
-- **Webブラウザ**（チェックポイントなどのダウンロードに使用）
-- **実習用の音声 `test_10s.wav`**（このチュートリアルで提供 — [`test_10s.wav`](resources/test_10s.wav)）
-
-## このモデルをどのように活用できますか？
-
 <div style="background:#fff5e6; border-left:4px solid #b86119; border-radius:8px; padding:18px 22px; margin:20px 0 24px;">
   <div style="color:#a45316; font-size:17px; font-weight:700; margin-bottom:8px;">
-    モデルを活用する準備ができました
+    このモデルをどのように活用できますか？
   </div>
   <div style="color:#553c25; line-height:1.7;">
     生成された
@@ -88,6 +78,14 @@ AI研究者の**Alexandre Défossez氏と共同研究者たち**は、この課�
 開発者や研究者は、このモデルを独自のアプリケーション、オーディオ処理ワークフロー（Workflow）、研究プロジェクトに組み込むこともできます。
 
 **互換性に関する注意：** アプリケーションは、モデルの入出力仕様に対応している必要があります。これには、正確なステムの順序（ドラム、ベース、ボーカル、ギター、ピアノ、その他）、出力形式（Output Format）、テンソルの次元（Tensor Dimensions）が含まれます。
+
+## 準備するもの
+
+- **macOS 13以降を搭載したMac**（Apple SiliconとIntelの両方に対応）
+- **インターネット接続**
+- **ターミナル（Terminal）アプリ**（macOSに標準搭載）
+- **Webブラウザ**（チェックポイントなどのダウンロードに使用）
+- **実習用の音声 `test_10s.wav`**（このチュートリアルで提供 — [`test_10s.wav`](resources/test_10s.wav)）
 
 ---
 

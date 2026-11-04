@@ -61,16 +61,6 @@ AI 연구자 **Alexandre Défossez와 공동 연구자들** 은 이 문제를 �
 
 **HTDemucs_CoreML_FP16.mlpackage** 라는 Core ML 인공지능 모델 패키지를 만듭니다. 이 모델은 44.1 kHz 스테레오 오디오를 10초 단위로 입력받아 드럼, 베이스, 보컬, 기타, 피아노, 그밖의 소리들로 분리합니다. 마지막 실습에서는 제공된 test_10s.wav를 입력해 여섯 개의 WAV 파일을 만들고 직접 들어봅니다. 이 모델을 적절히 활용하면 10초보다 긴 음악 파일도 여러 구간으로 나누어 처리한 뒤 다시 하나로 합쳐 연속된 Stem 파일들을 만들수도 있습니다.
 
-## 준비
-
-- **macOS 13 이상이 설치된 Mac** (Apple Silicon 및 Intel 모두 지원)
-- **인터넷 연결**
-- **터미널(Terminal) 앱** (Mac에 기본 설치된 앱)
-- **웹 브라우저** (체크포인트 다운로드 등에 필요)
-- **실습용 음원 `test_10s.wav`** (이 튜토리얼에서 제공 - [`test_10s.wav`](resources/test_10s.wav))
-
-## 모델 활용
-
 <div style="background:#fff5e6; border-left:4px solid #b86119; border-radius:8px; padding:18px 22px; margin:20px 0 24px;">
   <div style="color:#a45316; font-size:17px; font-weight:700; margin-bottom:8px;">
     스템 분리 모델을 만들었다면!
@@ -88,6 +78,14 @@ AI 연구자 **Alexandre Défossez와 공동 연구자들** 은 이 문제를 �
 개발자와 연구자는 이 모델을 자체 애플리케이션, 오디오 처리 워크플로(Workflow), 연구 프로젝트에 통합할 수도 있습니다.
 
 **호환성 참고:** 애플리케이션은 모델의 입력 및 출력 규격, 즉 스템 순서(드럼, 베이스, 보컬, 기타, 피아노, 기타 사운드), 출력 형식(Output Format), 텐서 차원(Tensor Dimensions) 호환성을 고려해야 합니다.
+
+## 준비
+
+- **macOS 13 이상이 설치된 Mac** (Apple Silicon 및 Intel 모두 지원)
+- **인터넷 연결**
+- **터미널(Terminal) 앱** (Mac에 기본 설치된 앱)
+- **웹 브라우저** (체크포인트 다운로드 등에 필요)
+- **실습용 음원 `test_10s.wav`** (이 튜토리얼에서 제공 - [`test_10s.wav`](resources/test_10s.wav))
 
 ---
 

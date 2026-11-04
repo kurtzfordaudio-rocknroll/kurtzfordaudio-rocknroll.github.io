@@ -61,19 +61,9 @@ In this tutorial, you will download a checkpoint yourself, convert it to Core ML
 
 You will create a Core ML model package named **HTDemucs_CoreML_FP16.mlpackage**. It accepts 44.1 kHz stereo audio in 10-second segments and separates it into drums, bass, vocals, guitar, piano, and other sounds. In the final exercise, you will use the supplied test_10s.wav file to generate six WAV files and listen to each one. With additional code to process successive segments and join their outputs, the model can also separate music files longer than 10 seconds into continuous stem tracks.
 
-## Requirements
-
-- **A Mac running macOS 13 or later** (both Apple Silicon and Intel are supported)
-- **An internet connection**
-- **The Terminal app** (included with macOS)
-- **A web browser** (for downloading the checkpoint and other files)
-- **The sample audio `test_10s.wav`** (provided with this tutorial — [`test_10s.wav`](resources/test_10s.wav))
-
-## How Can You Use This Model?
-
 <div style="background:#fff5e6; border-left:4px solid #b86119; border-radius:8px; padding:18px 22px; margin:20px 0 24px;">
   <div style="color:#a45316; font-size:17px; font-weight:700; margin-bottom:8px;">
-    Your Model Is Ready to Use
+    How Can You Use This Model?
   </div>
   <div style="color:#553c25; line-height:1.7;">
     The generated
@@ -88,6 +78,14 @@ If your music practice app supports user-provided Core ML models, you can load t
 Developers and researchers can also integrate the model into their own applications, audio processing workflows, or research projects.
 
 **Compatibility note:** The application must support the model's input/output specifications, including the exact stem order (drums, bass, vocals, guitar, piano, other), output format, and tensor dimensions.
+
+## Requirements
+
+- **A Mac running macOS 13 or later** (both Apple Silicon and Intel are supported)
+- **An internet connection**
+- **The Terminal app** (included with macOS)
+- **A web browser** (for downloading the checkpoint and other files)
+- **The sample audio `test_10s.wav`** (provided with this tutorial — [`test_10s.wav`](resources/test_10s.wav))
 
 ---
 

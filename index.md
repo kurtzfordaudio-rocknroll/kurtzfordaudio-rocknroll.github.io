@@ -45,14 +45,13 @@ In this tutorial, you will download a checkpoint yourself, convert it to Core ML
 - [Requirements](#requirements)
 - [Step 1. Open Terminal and Create a Working Folder](#step-1-open-terminal-and-create-a-working-folder)
 - [Step 2. Download the Checkpoint](#step-2-download-the-checkpoint)
-- [Step 3. Download the Converter ZIP](#step-3-download-the-converter-zip)
-- [Step 4. Extract the Core ML Converter](#step-4-extract-the-core-ml-converter)
-- [Step 5. Install Python and Create a Dedicated Environment](#step-5-install-python-and-create-a-dedicated-environment)
-- [Step 6. Copy the Checkpoint into the PyTorch Cache](#step-6-copy-the-checkpoint-into-the-pytorch-cache)
-- [Step 7. Make a Few Changes to the Conversion Code](#step-7-make-a-few-changes-to-the-conversion-code)
-- [Step 8. Create the FP16 Core ML Model](#step-8-create-the-fp16-core-ml-model)
-- [Step 9. Check the Model Inputs and Outputs](#step-9-check-the-model-inputs-and-outputs)
-- [Step 10. Separate and Listen to the Stems](#step-10-separate-and-listen-to-the-stems)
+- [Step 3. Download and Extract the Core ML Converter](#step-3-download-and-extract-the-core-ml-converter)
+- [Step 4. Install Python and Create a Dedicated Environment](#step-4-install-python-and-create-a-dedicated-environment)
+- [Step 5. Copy the Checkpoint into the PyTorch Cache](#step-5-copy-the-checkpoint-into-the-pytorch-cache)
+- [Step 6. Make a Few Changes to the Conversion Code](#step-6-make-a-few-changes-to-the-conversion-code)
+- [Step 7. Create the FP16 Core ML Model](#step-7-create-the-fp16-core-ml-model)
+- [Step 8. Check the Model Inputs and Outputs](#step-8-check-the-model-inputs-and-outputs)
+- [Step 9. Separate and Listen to the Stems](#step-9-separate-and-listen-to-the-stems)
 - [Troubleshooting FAQ](#troubleshooting-faq)
 - [Conclusion](#conclusion)
 - [References](#references)
@@ -149,26 +148,15 @@ In Finder, open your `Downloads` folder and confirm that `5c90dfd2-34c22ccb.th` 
 
 ---
 
-## Step 3. Download the Converter ZIP
+## Step 3. Download and Extract the Core ML Converter
 
-The converter transforms a pretrained HTDemucs PyTorch model into a Core ML model that can run on macOS.
+The converter transforms a pretrained HTDemucs PyTorch model into a Core ML model that can run on macOS. It originally supports four stems, but we will modify it to support six stems later. We will use commit **`d6fe735`** to ensure compatibility with this tutorial.
 
-Download the converter from commit **`d6fe735`** by running the following command in Terminal:
+Copy all the commands below into Terminal and press Return (Enter). They will download, extract, and prepare the converter.
 
-```bash id="qqtwp1"
-curl -fL https://github.com/dexxdean/htdemucs-coreml/archive/d6fe735.zip -o ~/htdemucs/htdemucs-coreml.zip
-```
-
-The ZIP file will be saved as **`~/htdemucs/htdemucs-coreml.zip`**.
-
----
-
-## Step 4. Extract the Core ML Converter
-
-Copy the following commands into Terminal and press Return (Enter):
-
-```bash id="ihrh5b"
+```bash
 cd ~/htdemucs
+curl -fL https://github.com/dexxdean/htdemucs-coreml/archive/d6fe735.zip -o htdemucs-coreml.zip
 unzip -q htdemucs-coreml.zip
 mv htdemucs-coreml-d6fe735* htdemucs-coreml
 cd htdemucs-coreml
@@ -179,15 +167,13 @@ A successful result should look like this:
 
 <pre class="no-copy"><code>convert.py       requirements.txt</code></pre>
 
-The converter originally supports four stems. We will modify it to support six stems in a later step.
-
 ---
 
-## Step 5. Install Python and Create a Dedicated Environment
+## Step 4. Install Python and Create a Dedicated Environment
 
 **Python** is the programming language used to run the converter. We will use Python 3.9.
 
-### 5-1. Check Whether Python Is Installed
+### 4-1. Check Whether Python Is Installed
 
 Run the following command in Terminal:
 
@@ -195,7 +181,7 @@ Run the following command in Terminal:
 python3.9 --version
 ```
 
-If you see `Python 3.9.x`, continue to Step 5-2. If you see `command not found` or a similar message, download and install the macOS installer for Python 3.9 from the [official Python website](https://www.python.org/downloads/macos/). Choose an installer compatible with your Mac's processor (Intel or Apple Silicon).
+If you see `Python 3.9.x`, continue to Step 4-2. If you see `command not found` or a similar message, download and install the macOS installer for Python 3.9 from the [official Python website](https://www.python.org/downloads/macos/). Choose an installer compatible with your Mac's processor (Intel or Apple Silicon).
 
 <figure style="margin: 24px 0; text-align: center;">
   <img
@@ -212,7 +198,7 @@ If you see `Python 3.9.x`, continue to Step 5-2. If you see `command not found` 
 
 After installation, run the same command again to confirm the version.
 
-### 5-2. Create a Working Environment
+### 4-2. Create a Working Environment
 
 This tutorial requires several Python packages. We will create a separate **virtual environment** so that these packages do not interfere with packages used by your other projects.
 
@@ -230,7 +216,7 @@ If `(.venv)` appears at the start of the Terminal prompt, the **virtual environm
 
 It is also fine if `(base)` appears next to `(.venv)`.
 
-### 5-3. Install the Required Python Packages
+### 4-3. Install the Required Python Packages
 
 Install the packages needed by the converter. Copy the entire block into Terminal and execute it:
 
@@ -262,7 +248,7 @@ source .venv/bin/activate
 
 ---
 
-## Step 6. Copy the Checkpoint into the PyTorch Cache
+## Step 5. Copy the Checkpoint into the PyTorch Cache
 
 Paste the following complete block into Terminal and press Return. It automatically copies the checkpoint file (`5c90dfd2-34c22ccb.th`) downloaded in Step 2 into the PyTorch cache directory.
 
@@ -287,7 +273,7 @@ If the last line begins with `Copied checkpoint to:` followed by a path, the cop
 
 ---
 
-## Step 7. Make a Few Changes to the Conversion Code
+## Step 6. Make a Few Changes to the Conversion Code
 
 This is the most important part of the guide. The converter we downloaded uses settings for a four-stem model. We need to change them as shown below. We will also set the Core ML minimum deployment target to macOS 13 so that the converted model can be used on relatively older versions of macOS.
 
@@ -302,7 +288,7 @@ This is the most important part of the guide. The converter we downloaded uses s
 
 The original Demucs six-source model outputs stems in this order: **drums, bass, other, vocals, guitar, piano**. We will change the order to **drums, bass, vocals, guitar, piano, other**.
 
-### 7-1. Download the Helper Script
+### 6-1. Download the Helper Script
 
 Download [`prepare_six_stem.py`](resources/prepare_six_stem.py), provided with this tutorial. We assume it is saved in `~/Downloads`.
 
@@ -332,7 +318,7 @@ Backup: convert.py.original-4stem
 Model: htdemucs_6s
 Output: drums, bass, vocals, guitar, piano, other</code></pre>
 
-### 7-2. Verify the Changes
+### 6-2. Verify the Changes
 
 Copy the entire block into Terminal and press Return:
 
@@ -360,7 +346,7 @@ Some operations in the original HTDemucs architecture cannot be directly convert
 
 ---
 
-## Step 8. Create the FP16 Core ML Model
+## Step 7. Create the FP16 Core ML Model
 
 This is the final step in creating the **Core ML package**.
 
@@ -399,7 +385,7 @@ ls -ld HTDemucs_CoreML_FP16.mlpackage
 
 ---
 
-## Step 9. Check the Model Inputs and Outputs
+## Step 8. Check the Model Inputs and Outputs
 
 Use `coremltools` to inspect the input and output specifications of the model you just created.
 
@@ -427,7 +413,7 @@ Outputs:
 
 The shape `[1, 6, 2, 441000]` means that one audio input produces six stems, each with two channels (left and right) containing 441,000 samples (10 seconds at 44.1 kHz).
 
-In Step 10, be sure to listen to the stems to verify both separation quality and source order. For example, `drums.wav` should contain drums, while `guitar.wav` should primarily contain guitar rather than an obviously different instrument.
+In Step 9, be sure to listen to the stems to verify both separation quality and source order. For example, `drums.wav` should contain drums, while `guitar.wav` should primarily contain guitar rather than an obviously different instrument.
 
 ---
 
@@ -440,7 +426,7 @@ A. Download Python 3.9.x from the [official Python website](https://www.python.o
 A. Run `source .venv/bin/activate` again and check `python -m pip install -r requirements.txt`.
 
 **Q. Only four stems are produced.**  
-A. Check that `MODEL_NAME`, `NUM_SOURCES`, `SOURCE_REORDER`, and `SOURCE_NAMES` match the values in Step 7, and make sure you have not selected an older `.mlpackage`.
+A. Check that `MODEL_NAME`, `NUM_SOURCES`, `SOURCE_REORDER`, and `SOURCE_NAMES` match the values in Step 6, and make sure you have not selected an older `.mlpackage`.
 
 **Q. I created the Core ML package, but loading or prediction fails.**  
 A. Check your macOS version, `coremltools` version, available disk space, memory, and the `CPU_AND_GPU` setting. Do not change compute units without validating the result.
@@ -450,7 +436,7 @@ A. Run `deactivate` in Terminal. When you return, go to the working folder and r
 
 ---
 
-## Step 10. Separate and Listen to the Stems
+## Step 9. Separate and Listen to the Stems
 
 Now let's see how well the Core ML model separates a real audio recording into individual instruments and vocals.
 

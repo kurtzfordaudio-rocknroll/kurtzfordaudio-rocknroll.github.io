@@ -153,7 +153,7 @@ Finder에서 `Downloads` 폴더를 열고 `5c90dfd2-34c22ccb.th` 파일이 받�
 
 호환성을 유지하기 위해 커밋 **`d6fe735`** 버전을 사용합니다. 다음 명령어를 터미널에 복사하여 실행하세요.
 
-```bash
+```
 curl -fL https://github.com/dexxdean/htdemucs-coreml/archive/d6fe735.zip -o ~/htdemucs/htdemucs-coreml.zip
 ```
 
@@ -165,7 +165,7 @@ ZIP 파일은 **`~/htdemucs/htdemucs-coreml.zip`**에 저장됩니다.
 
 아래 명령어를 모두 복사하여 터미널에 붙여넣고 Return(Enter) 키를 누르세요.
 
-```bash
+```
 cd ~/htdemucs
 unzip -q htdemucs-coreml.zip
 mv htdemucs-coreml-d6fe735* htdemucs-coreml

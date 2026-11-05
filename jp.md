@@ -14,7 +14,8 @@ author: K. Ford
 
 **HTDemucs 6-StemのチェックポイントをCore ML FP16モデルに変換し、自分の音楽ファイルで試してみよう**
 
-**所要時間の目安：** 約20分  
+**所要時間の目安：** 約20分
+
 **完成するもの：** macOS 13以降での利用を想定した音源分離用Core MLパッケージ `HTDemucs_CoreML_FP16.mlpackage`
 
 ボーカル、ドラム、ベース、ギター、ピアノなど、さまざまな音がミックスされた楽曲から、それぞれの楽器の音を取り出すことはできるでしょうか。
@@ -24,37 +25,57 @@ AI研究者の**Alexandre Défossez氏と共同研究者たち**は、この課�
 このチュートリアルでは、チェックポイントを自分でダウンロードし、MacでCore ML形式に変換した後、テスト音源を6つのステムに分離して実際に聴いてみます。
 
 <figure style="margin: 24px 0; text-align: center;">
-  <img
+
+<img
+
     src="./images/manlistening.jpg"
+
     alt="音楽を集中して聴いている人"
+
     width="500"
+
     height="500"
+
     style="width: 500px; height: 500px; object-fit: cover; object-position: center bottom; border-radius: 8px;"
+
     loading="lazy"
-  />
+
+/>
+
   <figcaption style="margin-top: 8px; font-size: 14px; color: #666;">
+
     写真提供：
+
     <a href="https://www.pexels.com/@wahlex-1869682520/" target="_blank" rel="noopener noreferrer">Wahlex</a>,
+
     pexels.com
+
   </figcaption>
+
 </figure>
 
 ## 目次
 
 - [何を作るのか？](#何を作るのか)
+
 - [準備するもの](#準備するもの)
+
 - [ステップ1. ターミナルを開いて作業フォルダを作る](#ステップ1-ターミナルを開いて作業フォルダを作る)
+
 - [ステップ2. チェックポイントをダウンロードする](#ステップ2-チェックポイントをダウンロードする)
-- [ステップ3. 変換ツールのZIPファイルをダウンロードする](#ステップ3-変換ツールのzipファイルをダウンロードする)
-- [ステップ4. Core ML変換ツールを展開する](#ステップ4-core-ml変換ツールを展開する)
-- [ステップ5. Pythonをインストールして専用環境を作る](#ステップ5-pythonをインストールして専用環境を作る)
-- [ステップ6. チェックポイントをPyTorchのキャッシュに置く](#ステップ6-チェックポイントをpytorchのキャッシュに置く)
-- [ステップ7. 変換コードを少し修正する](#ステップ7-変換コードを少し修正する)
-- [ステップ8. FP16のCore MLモデルを作成する](#ステップ8-fp16のcore-mlモデルを作成する)
-- [ステップ9. モデルの入力と出力を確認する](#ステップ9-モデルの入力と出力を確認する)
-- [ステップ10. ステムを分離して聴いてみる](#ステップ10-ステムを分離して聴いてみる)
+
+- [ステップ3. Core ML変換ツールをダウンロードして展開する](#ステップ3-core-ml変換ツールをダウンロードして展開する)
+- [ステップ4. Pythonをインストールして専用環境を作る](#ステップ4-pythonをインストールして専用環境を作る)
+- [ステップ5. チェックポイントをPyTorchのキャッシュに置く](#ステップ5-チェックポイントをpytorchのキャッシュに置く)
+- [ステップ6. 変換コードを少し修正する](#ステップ6-変換コードを少し修正する)
+- [ステップ7. FP16のCore MLモデルを作成する](#ステップ7-fp16のcore-mlモデルを作成する)
+- [ステップ8. モデルの入力と出力を確認する](#ステップ8-モデルの入力と出力を確認する)
+- [ステップ9. ステムを分離して聴いてみる](#ステップ9-ステムを分離して聴いてみる)
+
 - [トラブルシューティングFAQ](#トラブルシューティングfaq)
+
 - [おわりに](#おわりに)
+
 - [参考資料](#参考資料)
 
 ## 何を作るのか？
@@ -62,15 +83,25 @@ AI研究者の**Alexandre Défossez氏と共同研究者たち**は、この課�
 **HTDemucs_CoreML_FP16.mlpackage**というCore MLのAIモデルパッケージを作ります。このモデルは44.1 kHzのステレオ音声を10秒ずつ受け取り、ドラム、ベース、ボーカル、ギター、ピアノ、その他の音に分離します。最後の実習では、提供されるtest_10s.wavを入力して6つのWAVファイルを生成し、それぞれを聴いてみます。適切な処理を追加すれば、10秒より長い音楽ファイルも複数の区間に分けて処理し、結果をつなぎ合わせて連続したステムファイルを作ることができます。
 
 <div style="background:#fff5e6; border-left:4px solid #b86119; border-radius:8px; padding:18px 22px; margin:20px 0 24px;">
+
   <div style="color:#a45316; font-size:17px; font-weight:700; margin-bottom:8px;">
+
     このモデルをどのように活用できますか？
+
   </div>
+
   <div style="color:#553c25; line-height:1.7;">
+
     生成された
+
     <strong><code>HTDemucs_CoreML_FP16.mlpackage</code></strong>
+
     は、
+
     <strong>個人の音楽練習、アプリケーション開発、研究など、さまざまな用途に活用できます。</strong>
+
   </div>
+
 </div>
 
 お使いの音楽練習アプリがユーザー提供のCore MLモデルに対応している場合、このモデルを読み込むことで、楽曲をドラム、ベース、ボーカル、ギター、ピアノ、その他の音の6つのステム（Stem）に分離できます。特定の楽器を抽出または除去し、自分の練習用バッキングトラックを作成することもできます。
@@ -82,9 +113,13 @@ AI研究者の**Alexandre Défossez氏と共同研究者たち**は、この課�
 ## 準備するもの
 
 - **macOS 13以降を搭載したMac**（Apple SiliconとIntelの両方に対応）
+
 - **インターネット接続**
+
 - **ターミナル（Terminal）アプリ**（macOSに標準搭載）
+
 - **Webブラウザ**（チェックポイントなどのダウンロードに使用）
+
 - **実習用の音声 `test_10s.wav`**（このチュートリアルで提供 — [`test_10s.wav`](resources/test_10s.wav)）
 
 ---
@@ -100,7 +135,9 @@ AI研究者の**Alexandre Défossez氏と共同研究者たち**は、この課�
 ターミナルの開き方：
 
 1. Finderを開きます。
+
 2. **アプリケーション（Applications）** → **ユーティリティ（Utilities）**フォルダに移動します。
+
 3. 上のアイコンのような**ターミナル（Terminal）**をダブルクリックします。
 
 または、`⌘ Command + Space`を押して`Terminal`を検索し、Returnキーを押します。
@@ -115,7 +152,7 @@ AI研究者の**Alexandre Défossez氏と共同研究者たち**は、この課�
 
 次の4つのコマンドをすべてコピーしてターミナルに貼り付け、Return（Enter）キーを押してください。コマンドは順番に実行されます。
 
-```bash
+```
 mkdir -p ~/htdemucs
 cd ~/htdemucs
 pwd
@@ -125,8 +162,11 @@ ls
 各コマンドの役割は次のとおりです。
 
 1. `mkdir -p ~/htdemucs` - ホームフォルダ内に `htdemucs` フォルダが存在しない場合、新しく作成します。
+
 2. `cd ~/htdemucs` - `htdemucs` フォルダに移動します。
+
 3. `pwd` - 現在のフォルダのパスを表示します。
+
 4. `ls` - 現在のフォルダ内のファイル一覧を表示します。
 
 **確認:** `pwd` で表示されたパスが `/htdemucs` で終わっていれば成功です。フォルダが空の場合、`ls` を実行しても何も表示されません。これは正常です。
@@ -140,33 +180,26 @@ ls
 ダウンロードするファイル名は`5c90dfd2-34c22ccb.th`です。次のいずれかのリンクを開いてダウンロードしてください。
 
 - **Metaのサーバー：** [5c90dfd2-34c22ccb.thをダウンロード](https://dl.fbaipublicfiles.com/demucs/hybrid_transformer/5c90dfd2-34c22ccb.th)
+
 - **Hugging Face — lainlives/audio-separator-models：** [ファイルページ](https://huggingface.co/lainlives/audio-separator-models/blob/main/5c90dfd2-34c22ccb.th)
+
 - **Hugging Face — lainlives/audio-separator-models-old：** [ファイルページ](https://huggingface.co/lainlives/audio-separator-models-old/blob/a78be39e563e8337bc7f2e5241d8063256d86167/5c90dfd2-34c22ccb.th)
 
 Finderで`Downloads`フォルダを開き、`5c90dfd2-34c22ccb.th`があることを確認します。以降は`~/Downloads/5c90dfd2-34c22ccb.th`に保存されているものとして説明します。
 
 ---
 
-## ステップ3. 変換ツールのZIPファイルをダウンロードする
+## ステップ3. Core ML変換ツールをダウンロードして展開する
 
-変換ツール（Converter）は、学習済みのHTDemucs PyTorchモデルをmacOSで実行できるCore MLモデルに変換するツールです。
+変換ツール（Converter）は、学習済みのHTDemucs PyTorchモデルをmacOSで実行できるCore MLモデルに変換するツールです。もともと4ステム用に設定されていますが、後のステップで6ステムに対応するよう修正します。
 
-互換性を維持するため、コミット **`d6fe735`** のバージョンを使用します。次のコマンドをターミナルにコピーして実行してください。
+このチュートリアルとの互換性を維持するため、コミット **`d6fe735`** のバージョンを使用します。
 
-```
-curl -fL https://github.com/dexxdean/htdemucs-coreml/archive/d6fe735.zip -o ~/htdemucs/htdemucs-coreml.zip
-```
-
-ZIPファイルは **`~/htdemucs/htdemucs-coreml.zip`** に保存されます。
-
----
-
-## ステップ4. Core ML変換ツールを展開する
-
-次のコマンドをすべてコピーしてターミナルに貼り付け、Return（Enter）キーを押してください。
+次のコマンドをまとめてターミナルに貼り付け、Return（Enter）キーを押してください。変換ツールをダウンロードして展開し、必要なファイルがあることを確認します。
 
 ```
 cd ~/htdemucs
+curl -fL https://github.com/dexxdean/htdemucs-coreml/archive/d6fe735.zip -o htdemucs-coreml.zip
 unzip -q htdemucs-coreml.zip
 mv htdemucs-coreml-d6fe735* htdemucs-coreml
 cd htdemucs-coreml
@@ -177,15 +210,13 @@ ls convert.py requirements.txt
 
 <pre class="no-copy"><code>convert.py       requirements.txt</code></pre>
 
-この変換ツールは、もともと4ステム用に設定されています。後のステップで6ステムに対応するよう修正します。
-
 ---
 
-## ステップ5. Pythonをインストールして専用環境を作る
+## ステップ4. Pythonをインストールして専用環境を作る
 
 **Python（パイソン）**は、今回の変換プログラムを実行するためのプログラミング言語です。ここではPython 3.9を使用します。
 
-### 5-1. Pythonのインストールを確認する
+### 4-1. Pythonのインストールを確認する
 
 ターミナルで次のコマンドを実行します。
 
@@ -193,24 +224,35 @@ ls convert.py requirements.txt
 python3.9 --version
 ```
 
-`Python 3.9.x`と表示されればステップ5-2に進みます。`command not found`などのメッセージが表示された場合は、[Python公式サイト](https://www.python.org/downloads/macos/)からmacOS用Python 3.9のインストーラをダウンロードしてインストールしてください。Intel MacまたはApple Silicon Macに対応するインストーラを選びます。
+`Python 3.9.x`と表示されればステップ4-2に進みます。`command not found`などのメッセージが表示された場合は、[Python公式サイト](https://www.python.org/downloads/macos/)からmacOS用Python 3.9のインストーラをダウンロードしてインストールしてください。Intel MacまたはApple Silicon Macに対応するインストーラを選びます。
 
 <figure style="margin: 24px 0; text-align: center;">
-  <img
+
+<img
+
     src="./images/PythonDownload.png"
+
     alt="PythonのmacOS向けダウンロードページ"
+
     style="width: 100%; max-width: 900px; height: auto;"
+
     loading="lazy"
-  />
+
+/>
+
   <figcaption style="margin-top: 8px; font-size: 14px; color: #666;">
+
     <a href="https://www.python.org/downloads/macos/" target="_blank" rel="noopener noreferrer">Python公式サイト</a>から、
+
     Python 3.9.x の macOS 64-bit universal2 インストーラーをダウンロードしてください。
+
   </figcaption>
+
 </figure>
 
 インストール後、同じコマンドでもう一度確認してください。
 
-### 5-2. 作業環境を作る
+### 4-2. 作業環境を作る
 
 このチュートリアルでは、複数のPythonパッケージをインストールします。ほかのプロジェクトのパッケージと混ざらないように、独立した**仮想環境（virtual environment）**を作ります。
 
@@ -228,7 +270,7 @@ source .venv/bin/activate
 
 `(.venv)`の隣に`(base)`が表示されても問題ありません。
 
-### 5-3. 必要なPythonパッケージをインストールする
+### 4-3. 必要なPythonパッケージをインストールする
 
 変換ツールに必要なパッケージをインストールします。次のブロックをまとめてターミナルに貼り付け、実行してください。
 
@@ -260,7 +302,7 @@ source .venv/bin/activate
 
 ---
 
-## ステップ6. チェックポイントをPyTorchのキャッシュに置く
+## ステップ5. チェックポイントをPyTorchのキャッシュに置く
 
 次のブロック全体をターミナルに貼り付け、Returnキーを押してください。ステップ2でダウンロードしたチェックポイントファイル（`5c90dfd2-34c22ccb.th`）をPyTorchのキャッシュフォルダに自動でコピーします。
 
@@ -269,7 +311,6 @@ python - <<'PY'
 from pathlib import Path
 import shutil
 import torch
-
 source = Path.home() / 'Downloads' / '5c90dfd2-34c22ccb.th'
 target_dir = Path(torch.hub.get_dir()) / 'checkpoints'
 if not source.is_file():
@@ -285,7 +326,7 @@ PY
 
 ---
 
-## ステップ7. 変換コードを少し修正する
+## ステップ6. 変換コードを少し修正する
 
 ここがこのガイドで最も重要な部分です。ダウンロードした変換ツールには4ステム用の設定が入っています。以下のように変更します。また、比較的古いmacOSでも変換したモデルを使えるように、Core MLの最小デプロイ対象をmacOS 13に設定します。
 
@@ -300,7 +341,7 @@ PY
 
 元のDemucs 6-sourceモデルの出力順序は**drums, bass, other, vocals, guitar, piano**です。このガイドでは**drums, bass, vocals, guitar, piano, other**の順序に変更します。
 
-### 7-1. 補助スクリプトをダウンロードする
+### 6-1. 補助スクリプトをダウンロードする
 
 このチュートリアルに付属する[`prepare_six_stem.py`](resources/prepare_six_stem.py)をダウンロードしてください。`~/Downloads`に保存されたものとして説明します。
 
@@ -313,6 +354,7 @@ ls convert.py prepare_six_stem.py
 ```
 
 最初のコマンドは、別のフォルダに移動していた場合に備えたものです。すでに正しいフォルダにいる場合は省略できます。
+
 `cp`はスクリプトを現在のフォルダにコピーし、`ls`は両方のファイルがあることを確認します。確認できたら補助スクリプトを実行します。
 
 ```
@@ -326,11 +368,14 @@ python prepare_six_stem.py
 **想定される出力：**
 
 <pre class="no-copy"><code>SUCCESS: convert.py adapted for six stems.
+
 Backup: convert.py.original-4stem
+
 Model: htdemucs_6s
+
 Output: drums, bass, vocals, guitar, piano, other</code></pre>
 
-### 7-2. 変更内容を確認する
+### 6-2. 変更内容を確認する
 
 次のブロックをまとめてターミナルに貼り付け、Returnキーを押します。
 
@@ -348,8 +393,11 @@ PY
 次のように表示されれば正常です。
 
 <pre class="no-copy"><code>MODEL_NAME = "htdemucs_6s"
+
 NUM_SOURCES = 6
+
 SOURCE_REORDER = [0, 1, 3, 4, 5, 2]
+
 SOURCE_NAMES = ["drums", "bass", "vocals", "guitar", "piano", "other"]</code></pre>
 
 ### なぜ変換ツールを修正するのか？
@@ -358,7 +406,7 @@ SOURCE_NAMES = ["drums", "bass", "vocals", "guitar", "piano", "other"]</code></p
 
 ---
 
-## ステップ8. FP16のCore MLモデルを作成する
+## ステップ7. FP16のCore MLモデルを作成する
 
 いよいよ**Core MLパッケージ**を作る最終段階です。
 
@@ -372,9 +420,13 @@ python convert.py --fp16 --compute-units cpu_and_gpu
 変換中は、次のような処理段階が表示されます。
 
 <pre class="no-copy"><code>[1/5] Loading Demucs 'htdemucs_6s' ...
+
 [2/5] Building real-valued wrapper ...
+
 [3/5] PyTorch forward pass ...
+
 [4/5] torch.jit.trace ...
+
 [5/5] Core ML conversion ...</code></pre>
 
 複雑なニューラルネットワークの変換には多くのメモリが必要になる場合があります。変換と検証が**エラーなく終了したこと**を確認してください。次のような検証結果が表示されれば正常です。
@@ -382,7 +434,9 @@ python convert.py --fp16 --compute-units cpu_and_gpu
 <pre class="no-copy"><code>[Val] Validating Core ML vs. PyTorch reference ...
 
       Max diff:  0.005583
+
       Mean diff: 0.000232
+
       Validation OK.</code></pre>
 
 出力値の最大差（`Max diff`）と平均差（`Mean diff`）は、小さいほど良い値です。`Validation OK.`は変換ツールの検証に合格したことを示します。
@@ -397,14 +451,13 @@ ls -ld HTDemucs_CoreML_FP16.mlpackage
 
 ---
 
-## ステップ9. モデルの入力と出力を確認する
+## ステップ8. モデルの入力と出力を確認する
 
 `coremltools`を使って、作成したモデルの入力・出力仕様を確認します。
 
 ```
 python - <<'PY'
 import coremltools as ct
-
 path = 'HTDemucs_CoreML_FP16.mlpackage'
 model = ct.models.MLModel(path, compute_units=ct.ComputeUnit.CPU_AND_GPU)
 print('Inputs:')
@@ -419,43 +472,53 @@ PY
 確認には少し時間がかかる場合があります。次のような値が表示されます。
 
 <pre class="no-copy"><code>Inputs:
+
   audio [1, 2, 441000]
+
 Outputs:
+
   sources [1, 6, 2, 441000]</code></pre>
 
 `[1, 6, 2, 441000]`は、1回の音声処理で6つのステムが生成され、各ステムが左右2チャンネルと441,000サンプル（44.1 kHzで10秒分）で構成されることを意味します。
 
-ステップ10では、分離の品質と出力順序を必ず実際に聴いて確認してください。例えば`drums.wav`にはドラムの音が、`guitar.wav`には別の楽器ではなく主にギターの音が入っていることを確認します。
+ステップ9では、分離の品質と出力順序を必ず実際に聴いて確認してください。例えば`drums.wav`にはドラムの音が、`guitar.wav`には別の楽器ではなく主にギターの音が入っていることを確認します。
 
 ---
 
 ## トラブルシューティングFAQ
 
-**Q. `python3.9`が見つかりません。**  
+**Q. `python3.9`が見つかりません。**
+
 A. [Python公式サイト](https://www.python.org/downloads/macos/)からPython 3.9.xをダウンロードしてインストールしてください。その後、ターミナルで`python3.9 --version`を実行します。
 
-**Q. `No module named demucs`などのPythonエラーが表示されます。**  
+**Q. `No module named demucs`などのPythonエラーが表示されます。**
+
 A. `source .venv/bin/activate`を再度実行し、`python -m pip install -r requirements.txt`が正常に完了しているか確認してください。
 
-**Q. 4つのステムしか生成されません。**  
-A. `MODEL_NAME`、`NUM_SOURCES`、`SOURCE_REORDER`、`SOURCE_NAMES`がステップ7の値になっているか確認し、以前に作成した`.mlpackage`を間違って使っていないか確認してください。
+**Q. 4つのステムしか生成されません。**
 
-**Q. Core MLパッケージは作成できましたが、読み込みや予測に失敗します。**  
+A. `MODEL_NAME`、`NUM_SOURCES`、`SOURCE_REORDER`、`SOURCE_NAMES`がステップ6の値になっているか確認し、以前に作成した`.mlpackage`を間違って使っていないか確認してください。
+
+**Q. Core MLパッケージは作成できましたが、読み込みや予測に失敗します。**
+
 A. macOSのバージョン、`coremltools`のバージョン、空きディスク容量、メモリ、`CPU_AND_GPU`の設定を確認してください。検証せずに計算デバイスの設定を変更することは推奨しません。
 
-**Q. 仮想環境を終了するには？**  
+**Q. 仮想環境を終了するには？**
+
 A. ターミナルで`deactivate`を実行します。再開するときは作業フォルダで`source .venv/bin/activate`を実行してください。
 
 ---
 
-## ステップ10. ステムを分離して聴いてみる
+## ステップ9. ステムを分離して聴いてみる
 
 作成したCore MLモデルが、実際の音楽を楽器ごとにどの程度分離できるか確認してみましょう。
 
 10秒間の[`test_10s.wav`](resources/test_10s.wav)をダウンロードしてください。
 
 1. このGitHubリポジトリで**`test_10s.wav`**をクリックし、**Download raw file**アイコンを押してダウンロードします。
+
 2. ファイルがMacの`Downloads`フォルダに保存されていることを確認します。
+
 3. 次のコマンドを1行ずつ実行して変換ツールの作業フォルダに移動し、テスト音源をコピーします。
 
 ```
@@ -473,29 +536,24 @@ from pathlib import Path
 import numpy as np
 import coremltools as ct
 from scipy.io import wavfile
-
 rate, data = wavfile.read('test_10s.wav')
 if rate != 44100 or data.ndim != 2 or data.shape[1] != 2:
     raise ValueError('44.1 kHzのステレオWAVファイルが必要です。')
-
 data = data.astype(np.float32)
 segment_samples = 441000
 if len(data) < segment_samples:
     data = np.pad(data, ((0, segment_samples - len(data)), (0, 0)))
 else:
     data = data[:segment_samples]
-
 audio = np.transpose(data, (1, 0))[None, :, :]
 model = ct.models.MLModel(
     'HTDemucs_CoreML_FP16.mlpackage',
     compute_units=ct.ComputeUnit.CPU_AND_GPU,
 )
 sources = np.asarray(model.predict({'audio': audio})['sources'])[0]
-
 names = ['drums', 'bass', 'vocals', 'guitar', 'piano', 'other']
 if sources.shape != (6, 2, segment_samples):
     raise ValueError(f'想定外の出力形状: {sources.shape}')
-
 output_dir = Path('separated_stems')
 output_dir.mkdir(exist_ok=True)
 for name, stem in zip(names, sources):
@@ -528,6 +586,9 @@ HTDemucsのチェックポイントを使って自分のCore MLモデルを作�
 ## 参考資料
 
 - [Meta Demucsの元のリポジトリ](https://github.com/facebookresearch/demucs)
+
 - [HTDemucs Core ML変換ツール — dexxdean/htdemucs-coreml](https://github.com/dexxdean/htdemucs-coreml)
+
 - [Hybrid Transformers for Music Source Separation](https://arxiv.org/abs/2211.08553)
+
 - [Python公式ダウンロード](https://www.python.org/downloads/macos/)

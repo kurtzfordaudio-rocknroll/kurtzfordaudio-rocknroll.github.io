@@ -154,7 +154,7 @@ The converter transforms a pretrained HTDemucs PyTorch model into a Core ML mode
 
 Copy all the commands below into Terminal and press Return (Enter). They will download, extract, and prepare the converter.
 
-```bash
+```
 cd ~/htdemucs
 curl -fL https://github.com/dexxdean/htdemucs-coreml/archive/d6fe735.zip -o htdemucs-coreml.zip
 unzip -q htdemucs-coreml.zip

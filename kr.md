@@ -45,14 +45,13 @@ AI 연구자 **Alexandre Défossez와 공동 연구자들** 은 이 문제를 �
 - [준비](#준비)
 - [1단계. 터미널 열고 작업 폴더 만들기](#1단계-터미널-열고-작업-폴더-만들기)
 - [2단계. 체크포인트 다운로드하기](#2단계-체크포인트-다운로드하기)
-- [3단계. 변환기 ZIP 파일 다운로드하기](#3단계-변환기-zip-파일-다운로드하기)
-- [4단계. Core ML 변환기 압축 풀기](#4단계-core-ml-변환기-압축-풀기)
-- [5단계. Python 설치하고 전용 작업 공간 만들기](#5단계-python-설치하고-전용-작업-공간-만들기)
-- [6단계. 다운로드한 체크포인트를 PyTorch 캐시에 넣기](#6단계-다운로드한-체크포인트를-pytorch-캐시에-넣기)
-- [7단계. 변환용 코드 약간 수정하기](#7단계-변환용-코드-약간-수정하기)
-- [8단계. FP16 Core ML 모델 만들기](#8단계-fp16-core-ml-모델-만들기)
-- [9단계. 모델 입력과 출력 확인하기](#9단계-모델-입력과-출력-확인하기)
-- [10단계. 직접 분리해 보고 들어보기](#10단계-직접-분리해-보고-들어보기)
+- [3단계. Core ML 변환기 다운로드 및 압축 풀기](#3단계-core-ml-변환기-다운로드-및-압축-풀기)
+- [4단계. Python 설치하고 전용 작업 공간 만들기](#5단계-python-설치하고-전용-작업-공간-만들기)
+- [5단계. 다운로드한 체크포인트를 PyTorch 캐시에 넣기](#5단계-다운로드한-체크포인트를-pytorch-캐시에-넣기)
+- [6단계. 변환용 코드 약간 수정하기](#6단계-변환용-코드-약간-수정하기)
+- [7단계. FP16 Core ML 모델 만들기](#7단계-fp16-core-ml-모델-만들기)
+- [8단계. 모델 입력과 출력 확인하기](#8단계-모델-입력과-출력-확인하기)
+- [9단계. 직접 분리해 보고 들어보기](#9단계-직접-분리해-보고-들어보기)
 - [문제 해결 FAQ](#문제-해결-faq)
 - [마치며](#마치며)
 - [참고 자료와 출처](#참고-자료와-출처)
@@ -115,7 +114,7 @@ AI 연구자 **Alexandre Défossez와 공동 연구자들** 은 이 문제를 �
 
 다음 네 개의 명령어를 모두 복사하여 터미널에 붙여넣고 Return(Enter) 키를 누르세요. 명령어는 순서대로 실행됩니다.
 
-```bash
+```
 mkdir -p ~/htdemucs
 cd ~/htdemucs
 pwd
@@ -147,26 +146,17 @@ Finder에서 `Downloads` 폴더를 열고 `5c90dfd2-34c22ccb.th` 파일이 받�
 
 ---
 
-## 3단계. 변환기 ZIP 파일 다운로드하기
+## 3단계. Core ML 변환기 다운로드 및 압축 풀기
 
-변환기(Converter)는 사전 훈련된 HTDemucs PyTorch 모델을 macOS에서 실행할 수 있는 Core ML 모델로 변환하는 도구입니다.
+변환기(Converter)는 사전 훈련된 HTDemucs PyTorch 모델을 macOS에서 실행할 수 있는 Core ML 모델로 변환하는 도구입니다. 원래 4-stem용으로 구성되어 있지만, 이후 단계에서 6-stem을 지원하도록 수정하겠습니다.
 
-호환성을 유지하기 위해 커밋 **`d6fe735`** 버전을 사용합니다. 다음 명령어를 터미널에 복사하여 실행하세요.
+튜토리얼과의 호환성을 유지하기 위해 커밋 **`d6fe735`** 버전을 사용합니다.
 
-```
-curl -fL https://github.com/dexxdean/htdemucs-coreml/archive/d6fe735.zip -o ~/htdemucs/htdemucs-coreml.zip
-```
-
-ZIP 파일은 **`~/htdemucs/htdemucs-coreml.zip`**에 저장됩니다.
-
----
-
-## 4단계. Core ML 변환기 압축 풀기
-
-아래 명령어를 모두 복사하여 터미널에 붙여넣고 Return(Enter) 키를 누르세요.
+아래 명령어를 모두 복사하여 터미널에 붙여넣고 Return(Enter) 키를 누르세요. 변환기를 다운로드하고 압축을 풀어 작업 폴더를 준비합니다.
 
 ```
 cd ~/htdemucs
+curl -fL https://github.com/dexxdean/htdemucs-coreml/archive/d6fe735.zip -o htdemucs-coreml.zip
 unzip -q htdemucs-coreml.zip
 mv htdemucs-coreml-d6fe735* htdemucs-coreml
 cd htdemucs-coreml
@@ -177,15 +167,13 @@ ls convert.py requirements.txt
 
 <pre class="no-copy"><code>convert.py       requirements.txt</code></pre>
 
-이 변환기는 원래 4-stem용으로 구성되어 있습니다. 이후 단계에서 6-stem을 지원하도록 수정하겠습니다.
-
 ---
 
-## 5단계. Python 설치하고 전용 작업 공간 만들기
+## 4단계. Python 설치하고 전용 작업 공간 만들기
 
 **Python(파이썬)** 은 우리가 사용할 변환 프로그램을 실행하는 언어입니다. 버전 3.9를 이용하겠습니다.
 
-### 5-1. Python 설치 여부 확인하기
+### 4-1. Python 설치 여부 확인하기
 
 터미널에 다음 명령을 입력합니다.
 
@@ -193,7 +181,7 @@ ls convert.py requirements.txt
 python3.9 --version
 ```
 
-`Python 3.9.x`가 나오면 5-2로 넘어갑니다. `command not found` 같은 메시지가 나오면 [Python 공식 사이트](https://www.python.org/downloads/macos/)에서 Python 3.9용 macOS 설치 프로그램을 다운로드하여 설치하세요. Intel Mac과 Apple Silicon Mac 모두 지원하는 설치 프로그램을 선택합니다.
+`Python 3.9.x`가 나오면 4-2로 넘어갑니다. `command not found` 같은 메시지가 나오면 [Python 공식 사이트](https://www.python.org/downloads/macos/)에서 Python 3.9용 macOS 설치 프로그램을 다운로드하여 설치하세요. Intel Mac과 Apple Silicon Mac 모두 지원하는 설치 프로그램을 선택합니다.
 
 <figure style="margin: 24px 0; text-align: center;">
   <img
@@ -210,7 +198,7 @@ python3.9 --version
 
 확인을 위해 설치 후 터미널에서 위의 명령을 다시 실행해 봅니다.
 
-### 5-2. 작업 공간 만들기
+### 4-2. 작업 공간 만들기
 
 이 튜토리얼에서는 몇가지 Python용 패키지를 설치하는 과정이 포함되어있습니다. **가상환경(virtual environment)** 이라고 부르는 독립된 작업 공간을 만들어서 다른 프로젝트의 Python 패키지들과 섞이지 않게 해 줍니다.
 
@@ -228,7 +216,7 @@ source .venv/bin/activate
 
 `(.venv)` 옆에 `(base)` 가 보여도 상관 없습니다.
 
-### 5-3. 필요한 Python 패키지 설치하기
+### 4-3. 필요한 Python 패키지 설치하기
 
 이제 변환 프로그램이 필요로 하는 패키지들을 설치합니다. 복사해서 프롬프트에 붙여넣고 제출하세요.
 
@@ -260,7 +248,7 @@ source .venv/bin/activate
 
 ---
 
-## 6단계. 다운로드한 체크포인트를 PyTorch 캐시에 넣기
+## 5단계. 다운로드한 체크포인트를 PyTorch 캐시에 넣기
 
 터미널에 아래 명령을 통째로 붙여넣고 Return을 누릅니다. 2단계에서 다운로드한 체크포인트 파일(`5c90dfd2-34c22ccb.th`)을 캐시 경로로 자동 복사합니다.
 
@@ -285,7 +273,7 @@ PY
 
 ---
 
-## 7단계. 변환용 코드 약간 수정하기
+## 6단계. 변환용 코드 약간 수정하기
 
 이 가이드에서 가장 중요한 부분입니다. 우리가 다운로드했던 변환기(변환용 코드)는 4-stem용 기본값을 사용합니다. 이를 아래와 같이 바꾸어야 합니다. 이때 Core ML 최소 실행 버전도 macOS 13으로 설정합니다. 이는 여러분이 만든 모델을 비교적 오래된 macOS에서도 사용할 수 있도록 하기 위한 것입니다.
 
@@ -300,7 +288,7 @@ PY
 
 원래 Demucs 6-source 모델의 내부 출력 순서는 **drums, bass, other, vocals, guitar, piano**입니다. 이 가이드는 출력 순서를 **drums, bass, vocals, guitar, piano, other**로 변경하겠습니다.
 
-### 7-1. 보조 스크립트 다운로드
+### 6-1. 보조 스크립트 다운로드
 
 이 튜토리얼과 함께 제공되는 [`prepare_six_stem.py`](resources/prepare_six_stem.py) 파일을 다운로드하세요. `~/Downloads` 폴더에 저장했다고 가정합니다.
 
@@ -330,7 +318,7 @@ Backup: convert.py.original-4stem
 Model: htdemucs_6s
 Output: drums, bass, vocals, guitar, piano, other</code></pre>
 
-### 7-2. 수정 결과 확인
+### 6-2. 수정 결과 확인
 
 통째로 터미널 프롬프트에 복사해서 붙여넣고 Return키를 누르세요.
 
@@ -358,7 +346,7 @@ SOURCE_NAMES = ["drums", "bass", "vocals", "guitar", "piano", "other"]</code></p
 
 ---
 
-## 8단계. FP16 Core ML 모델 만들기
+## 7단계. FP16 Core ML 모델 만들기
 
 **Core ML 패키지** 를 만드는 최종 단계입니다.
 
@@ -397,7 +385,7 @@ ls -ld HTDemucs_CoreML_FP16.mlpackage
 
 ---
 
-## 9단계. 모델 입력과 출력 확인하기
+## 8단계. 모델 입력과 출력 확인하기
 
 `coremltools`로 방금 만든 모델의 입력·출력 사양을 확인합니다.
 
@@ -425,7 +413,7 @@ Outputs:
 
 [1, 6, 2, 441000]은 한 번의 오디오 처리로 6개의 Stem이 생성되고, 각 Stem은 2채널(왼쪽/오른쪽), 441000샘플(10초 분량)로 구성된다는 뜻입니다.
 
-10단계의 안내를 따라 실제 음원의 분리 품질과 source 순서를 확인하는 청취 테스트도 반드시 실시합니다. 즉 `drums.wav`를 청취했을 때 그 속에 실제로 드럼 소리가 들어있는지, `guitar.wav`를 청취했을 때 기타소리 외에 다른 악기 소리가 두드러지게 섞여있는지 등을 확인합니다.
+9단계의 안내를 따라 실제 음원의 분리 품질과 source 순서를 확인하는 청취 테스트도 반드시 실시합니다. 즉 `drums.wav`를 청취했을 때 그 속에 실제로 드럼 소리가 들어있는지, `guitar.wav`를 청취했을 때 기타소리 외에 다른 악기 소리가 두드러지게 섞여있는지 등을 확인합니다.
 
 ---
 
@@ -438,7 +426,7 @@ A. Python 공식 사이트 [`https://www.python.org/downloads/macos/`] 에서 Py
 A. `source .venv/bin/activate`를 다시 실행하고 `python -m pip install -r requirements.txt`를 확인하세요.
 
 **Q. 4개 stem만 생성됩니다.**  
-A. `MODEL_NAME`, `NUM_SOURCES`, `SOURCE_REORDER`, `SOURCE_NAMES`가 7단계의 값인지 확인하고, 이전에 생성한 `.mlpackage`와 혼동하지 않았는지 확인하세요.
+A. `MODEL_NAME`, `NUM_SOURCES`, `SOURCE_REORDER`, `SOURCE_NAMES`가 6단계의 값인지 확인하고, 이전에 생성한 `.mlpackage`와 혼동하지 않았는지 확인하세요.
 
 **Q. Core ML 모델을 생성했지만 로딩이나 예측이 실패합니다.**  
 A. macOS 버전과 `coremltools` 버전, 디스크 공간, 메모리, 그리고 `CPU_AND_GPU` 설정을 확인하세요. 계산 장치의 변경은 별도 검증 없이 권장하지 않습니다.
@@ -448,7 +436,7 @@ A. 터미널에서 `deactivate`를 실행하세요. 다시 시작할 때는 작�
 
 ---
 
-## 10단계. 직접 분리해 보고 들어보기
+## 9단계. 직접 분리해 보고 들어보기
 
 이제 우리가 만든 Core ML 모델이 실제로 악기 소리를 얼마나 잘 분리하는지 확인해 봅니다.
 

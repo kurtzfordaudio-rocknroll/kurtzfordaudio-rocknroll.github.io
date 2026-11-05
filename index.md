@@ -153,31 +153,24 @@ In Finder, open your `Downloads` folder and confirm that `5c90dfd2-34c22ccb.th` 
 
 The converter transforms a pretrained HTDemucs PyTorch model into a Core ML model that can run on macOS.
 
-Download the version used in this tutorial:
+Download the converter from commit **`d6fe735`** by running the following command in Terminal:
 
-**[Download HTDemucs Core ML Converter (Commit d6fe735)](https://github.com/dexxdean/htdemucs-coreml/archive/d6fe735.zip)**
+```bash id="qqtwp1"
+curl -fL https://github.com/dexxdean/htdemucs-coreml/archive/d6fe735.zip -o ~/htdemucs/htdemucs-coreml.zip
+```
 
-This version is fixed to commit **`d6fe735`** to ensure compatibility with the tutorial.
-
-In Finder, open your **`Downloads`** folder. The downloaded file should look similar to:
-
-`htdemucs-coreml-d6fe735f2c485f88cce9db123f4bacc3a9d3f02a.zip`
-
-Rename it to **`htdemucs-coreml.zip`**.
+The ZIP file will be saved as **`~/htdemucs/htdemucs-coreml.zip`**.
 
 ---
 
 ## Step 4. Extract the Core ML Converter
 
-The converter originally supports four stems. We will modify it to support six stems in a later step.
+Copy the following commands into Terminal and press Return (Enter):
 
-Copy all the commands below into Terminal and press Return (Enter). They will extract the ZIP file into **`~/htdemucs/htdemucs-coreml`** and check the required files.
-
-```bash
+```bash id="ihrh5b"
 cd ~/htdemucs
-unzip -q ~/Downloads/htdemucs-coreml.zip -d converter-download
-mv converter-download/* htdemucs-coreml
-rmdir converter-download
+unzip -q htdemucs-coreml.zip
+mv htdemucs-coreml-d6fe735* htdemucs-coreml
 cd htdemucs-coreml
 ls convert.py requirements.txt
 ```
@@ -185,6 +178,8 @@ ls convert.py requirements.txt
 A successful result should look like this:
 
 <pre class="no-copy"><code>convert.py       requirements.txt</code></pre>
+
+The converter originally supports four stems. We will modify it to support six stems in a later step.
 
 ---
 

@@ -149,21 +149,33 @@ Finderで`Downloads`フォルダを開き、`5c90dfd2-34c22ccb.th`があるこ�
 
 ## ステップ3. 変換ツールのZIPファイルをダウンロードする
 
-ブラウザで[dexxdean/htdemucs-coremlリポジトリ](https://github.com/dexxdean/htdemucs-coreml)を開きます。緑色の**Code**ボタンをクリックし、**Download ZIP**を選びます。ブラウザのダウンロード先を変更していなければ、`htdemucs-coreml-main.zip`が`~/Downloads`に保存されます。
+変換ツール（Converter）は、学習済みのHTDemucs PyTorchモデルをmacOSで実行できるCore MLモデルに変換するツールです。
+
+このチュートリアルで使用するバージョンをダウンロードします。
+
+**[HTDemucs Core ML変換ツールをダウンロード（コミット d6fe735）](https://github.com/dexxdean/htdemucs-coreml/archive/d6fe735.zip)**
+
+互換性を維持するため、コミット **`d6fe735`** のバージョンを使用します。
+
+Finderで **`Downloads`** フォルダを開きます。ダウンロードされたファイル名は次のようになります。
+
+`htdemucs-coreml-d6fe735f2c485f88cce9db123f4bacc3a9d3f02a.zip`
+
+ファイル名を **`htdemucs-coreml.zip`** に変更します。
 
 ---
 
 ## ステップ4. Core ML変換ツールを展開する
 
-HTDemucsをCore MLに変換するため、[dexxdean/htdemucs-coreml](https://github.com/dexxdean/htdemucs-coreml)プロジェクトを使用します。この変換ツールは、もともと4ステム用に設定されています。6ステムに対応できるよう少し修正します。
+この変換ツールは、もともと4ステム用に設定されています。後のステップで6ステムに対応するよう修正します。
 
-次のコマンドをターミナルで順番に実行します。`~/Downloads`のZIPファイルを`~/htdemucs`にコピーして展開し、フォルダ名を変更して、必要な2つのファイルを確認します。
+次のコマンドをすべてコピーしてターミナルに貼り付け、Return（Enter）キーを押してください。ZIPファイルを **`~/htdemucs/htdemucs-coreml`** フォルダに展開し、必要なファイルがあることを確認します。
 
 ```bash
 cd ~/htdemucs
-cp ~/Downloads/htdemucs-coreml-main.zip .
-unzip htdemucs-coreml-main.zip
-mv htdemucs-coreml-main htdemucs-coreml
+unzip -q ~/Downloads/htdemucs-coreml.zip -d converter-download
+mv converter-download/* htdemucs-coreml
+rmdir converter-download
 cd htdemucs-coreml
 ls convert.py requirements.txt
 ```

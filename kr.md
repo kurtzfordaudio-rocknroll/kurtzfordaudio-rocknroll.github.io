@@ -149,21 +149,33 @@ Finder에서 `Downloads` 폴더를 열고 `5c90dfd2-34c22ccb.th` 파일이 받�
 
 ## 3단계. 변환기 ZIP 파일 다운로드하기
 
-웹 브라우저에서 [dexxdean/htdemucs-coreml 저장소](https://github.com/dexxdean/htdemucs-coreml)를 엽니다. 초록색 **Code** 버튼을 클릭한 다음 **Download ZIP**을 선택합니다. 브라우저의 다운로드 경로를 변경하지 않았다면 `htdemucs-coreml-main.zip` 파일이 `~/Downloads`에 저장됩니다.
+변환기(Converter)는 사전 훈련된 HTDemucs PyTorch 모델을 macOS에서 실행할 수 있는 Core ML 모델로 변환하는 도구입니다.
+
+이 튜토리얼에서 사용하는 버전을 다운로드합니다.
+
+**[HTDemucs Core ML 변환기 다운로드 (커밋 d6fe735)](https://github.com/dexxdean/htdemucs-coreml/archive/d6fe735.zip)**
+
+호환성을 유지하기 위해 **`d6fe735`** 커밋 버전을 사용합니다.
+
+Finder에서 **`Downloads`** 폴더를 엽니다. 다운로드된 파일 이름은 다음과 비슷합니다.
+
+`htdemucs-coreml-d6fe735f2c485f88cce9db123f4bacc3a9d3f02a.zip`
+
+파일 이름을 **`htdemucs-coreml.zip`**으로 변경합니다.
 
 ---
 
 ## 4단계. Core ML 변환기 압축 풀기
 
-HTDemucs를 Core ML로 바꾸기 위해 [dexxdean/htdemucs-coreml](https://github.com/dexxdean/htdemucs-coreml) 프로젝트를 사용합니다. 이 변환기는 원래 4-stem을 다루도록 구성되어 있습니다. 6-stem을 다룰 수 있게 약간 변경하겠습니다.
+이 변환기는 원래 4-stem용으로 구성되어 있습니다. 이후 단계에서 6-stem을 지원하도록 수정하겠습니다.
 
-아래 명령을 터미널에서 차례대로 실행합니다. `~/Downloads`의 ZIP 파일을 `~/htdemucs`로 복사하고, 압축을 풀고, 폴더 이름을 정리한 다음 필요한 두 파일이 있는지 확인합니다.
+아래 명령어를 모두 복사하여 터미널에 붙여넣고 Return(Enter) 키를 누르세요. ZIP 파일의 압축을 **`~/htdemucs/htdemucs-coreml`** 폴더에 풀고 필요한 파일이 있는지 확인합니다.
 
 ```bash
 cd ~/htdemucs
-cp ~/Downloads/htdemucs-coreml-main.zip .
-unzip htdemucs-coreml-main.zip
-mv htdemucs-coreml-main htdemucs-coreml
+unzip -q ~/Downloads/htdemucs-coreml.zip -d converter-download
+mv converter-download/* htdemucs-coreml
+rmdir converter-download
 cd htdemucs-coreml
 ls convert.py requirements.txt
 ```

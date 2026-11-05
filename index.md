@@ -151,21 +151,33 @@ In Finder, open your `Downloads` folder and confirm that `5c90dfd2-34c22ccb.th` 
 
 ## Step 3. Download the Converter ZIP
 
-Open the [dexxdean/htdemucs-coreml repository](https://github.com/dexxdean/htdemucs-coreml) in your web browser. Click the green **Code** button, then choose **Download ZIP**. The file `htdemucs-coreml-main.zip` will be saved to `~/Downloads` (unless you changed your browser download location).
+The converter transforms a pretrained HTDemucs PyTorch model into a Core ML model that can run on macOS.
+
+Download the version used in this tutorial:
+
+**[Download HTDemucs Core ML Converter (Commit d6fe735)](https://github.com/dexxdean/htdemucs-coreml/archive/d6fe735.zip)**
+
+This version is fixed to commit **`d6fe735`** to ensure compatibility with the tutorial.
+
+In Finder, open your **`Downloads`** folder. The downloaded file should look similar to:
+
+`htdemucs-coreml-d6fe735f2c485f88cce9db123f4bacc3a9d3f02a.zip`
+
+Rename it to **`htdemucs-coreml.zip`**.
 
 ---
 
 ## Step 4. Extract the Core ML Converter
 
-We will use the [dexxdean/htdemucs-coreml](https://github.com/dexxdean/htdemucs-coreml) project to convert HTDemucs into Core ML. This converter is originally configured for four stems. We will make a few changes to support six stems.
+The converter originally supports four stems. We will modify it to support six stems in a later step.
 
-Run the following commands in Terminal. They copy the ZIP file from `~/Downloads` into `~/htdemucs`, extract it, rename the extracted folder, and confirm that the two required files are present.
+Copy all the commands below into Terminal and press Return (Enter). They will extract the ZIP file into **`~/htdemucs/htdemucs-coreml`** and check the required files.
 
 ```bash
 cd ~/htdemucs
-cp ~/Downloads/htdemucs-coreml-main.zip .
-unzip htdemucs-coreml-main.zip
-mv htdemucs-coreml-main htdemucs-coreml
+unzip -q ~/Downloads/htdemucs-coreml.zip -d converter-download
+mv converter-download/* htdemucs-coreml
+rmdir converter-download
 cd htdemucs-coreml
 ls convert.py requirements.txt
 ```

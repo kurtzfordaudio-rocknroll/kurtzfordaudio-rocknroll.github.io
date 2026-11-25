@@ -21,6 +21,32 @@ Can we separate the individual instruments and vocals from a song that mixes dru
 
 AI researcher **Alexandre Défossez and colleagues** developed **Demucs**, a model for separating audio sources, to tackle this problem. They trained the model using **MUSDB HQ and other music datasets** and released code and pretrained model checkpoints for further research. The later **Hybrid Transformer Demucs (HTDemucs)** combines waveform and spectrogram processing to separate audio into six stems: drums, bass, vocals, guitar, piano, and other sounds.
 
+<style>
+  .coreml-download-button {
+    display: inline-block;
+    padding: 10px 16px;
+    border-radius: 8px;
+    background: #a45316;
+    color: #fff;
+    font-weight: 700;
+    text-decoration: none;
+  }
+
+  .coreml-download-button:hover,
+  .coreml-download-button:focus-visible {
+    background: #85400f;
+    color: #fff;
+    text-decoration: underline;
+  }
+</style>
+
+<div style="margin: 20px 0;">
+  <a class="coreml-download-button"
+     href="https://huggingface.co/kurtzford/HTDemucs-CoreML-FP16/resolve/main/HTDemucs_CoreML_FP16.mlpackage.zip?download=true">
+    Download the Core ML Model (ZIP)
+  </a>
+</div>
+
 In this tutorial, you will download a checkpoint yourself, convert it to Core ML on a Mac, then separate a test audio file into six stems and listen to the results.
 
 <figure style="margin: 24px 0; text-align: center;">
@@ -69,6 +95,12 @@ You will create a Core ML model package named **HTDemucs_CoreML_FP16.mlpackage**
     <strong><code>HTDemucs_CoreML_FP16.mlpackage</code></strong>
     can be used for
     <strong>personal music practice, application development, research, and so on.</strong>
+  </div>
+  <div style="margin-top:14px;">
+    <a class="coreml-download-button"
+       href="https://huggingface.co/kurtzford/HTDemucs-CoreML-FP16/resolve/main/HTDemucs_CoreML_FP16.mlpackage.zip?download=true">
+      Download the Core ML Model (ZIP)
+    </a>
   </div>
 </div>
 

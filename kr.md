@@ -21,6 +21,32 @@ author: K. Ford
 
 AI 연구자 **Alexandre Défossez와 공동 연구자들** 은 이 문제를 해결하기 위해 **Demucs**라는 인공지능 음원 분리 모델을 개발했습니다. 연구진은 **MUSDB HQ 등 음악 데이터**를 활용해 모델을 학습시켰고, 다른 사람들이 후속 연구에 사용할 수 있도록 일부 코드와 사전 학습된 모델의 체크포인트를 공개했습니다. 나중에 등장한 **Hybrid Transformer Demucs (HTDemucs)** 는 파형과 스펙트로그램을 함께 처리하여 여섯개의 Stem (드럼, 베이스, 보컬, 기타, 피아노, 그밖의 소리들) 을 깔끔하게 분리하는데 성공합니다.
 
+<style>
+  .coreml-download-button {
+    display: inline-block;
+    padding: 10px 16px;
+    border-radius: 8px;
+    background: #a45316;
+    color: #fff;
+    font-weight: 700;
+    text-decoration: none;
+  }
+
+  .coreml-download-button:hover,
+  .coreml-download-button:focus-visible {
+    background: #85400f;
+    color: #fff;
+    text-decoration: underline;
+  }
+</style>
+
+<div style="margin: 20px 0;">
+  <a class="coreml-download-button"
+     href="https://huggingface.co/kurtzford/HTDemucs-CoreML-FP16/resolve/main/HTDemucs_CoreML_FP16.mlpackage.zip?download=true">
+    Download the Core ML Model (ZIP)
+  </a>
+</div>
+
 이 튜토리얼은 체크포인트를 직접 다운로드하고, Mac에서 Core ML 형식으로 변환한 다음, 마지막에 테스트 음원으로부터 여섯개 Stem을 분리해내고 직접 들어보는 과정을 다룹니다.
 
 <figure style="margin: 24px 0; text-align: center;">
@@ -69,6 +95,12 @@ AI 연구자 **Alexandre Défossez와 공동 연구자들** 은 이 문제를 �
     <strong><code>HTDemucs_CoreML_FP16.mlpackage</code></strong>
     모델은
     <strong>개인 음악 연습, 애플리케이션 개발, 연구 등 다양한 용도로 활용할 수 있습니다.</strong>
+  </div>
+  <div style="margin-top:14px;">
+    <a class="coreml-download-button"
+       href="https://huggingface.co/kurtzford/HTDemucs-CoreML-FP16/resolve/main/HTDemucs_CoreML_FP16.mlpackage.zip?download=true">
+      Download the Core ML Model (ZIP)
+    </a>
   </div>
 </div>
 
